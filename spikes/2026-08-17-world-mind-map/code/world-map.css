@@ -90,9 +90,7 @@
   font-variant-numeric: tabular-nums;
   border: 1.5px solid;
   transform: translate(-50%, -50%);
-  box-shadow:
-    0 0 0 3px rgba(13, 16, 23, 0.92),
-    0 5px 12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.5);
   transition:
     transform 140ms ease,
     box-shadow 140ms ease;
@@ -124,9 +122,7 @@
   height: 104px;
   gap: 7px;
   border-width: 2px;
-  box-shadow:
-    0 0 0 5px rgba(13, 16, 23, 0.92),
-    0 10px 24px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.55);
 }
 .badges-open .badge:hover {
   transform: translate(-50%, -50%) scale(1.06);
