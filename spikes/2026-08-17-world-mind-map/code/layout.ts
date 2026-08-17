@@ -1,15 +1,14 @@
-// One ring at a time. Whatever is focused sits at the origin and its children
-// stand around it; everything deeper is reached by clicking in, not by drawing
-// it smaller.
+// The world stays where it is. Nothing replaces it and nothing is navigated
+// to — a category opens as a branch growing out of the badge that names it,
+// in the direction that badge already points.
 
-// The middle of the map is much larger than its ring: big enough to carry
-// labelled badges on its rim, and to read as the thing everything else is
-// hanging off.
-export const CENTRE_SIZE = 340;
+export const CENTRE_SIZE = 300;
 export const ITEM_SIZE = 128;
 
-const MIN_RADIUS = 380;
-const SPACING = 50;
+/** Room for one card along an arc, including the air beside it. */
+const ALONG_ARC = ITEM_SIZE + 34;
+/** How far a branch stands off the card it grows from. */
+const REACH = 128;
 
 /**
  * Badges are spread evenly right around a card's rim, 360°/n apart, clockwise
@@ -33,17 +32,46 @@ export function rimPercent(angle: number) {
   return { left: 50 + 50 * Math.cos(angle), top: 50 + 50 * Math.sin(angle) };
 }
 
-export function ringRadius(count: number) {
-  return Math.max(MIN_RADIUS, (count * SPACING) / 1.6);
+const polar = (radius: number, angle: number) => ({
+  x: Math.cos(angle) * radius,
+  y: Math.sin(angle) * radius,
+});
+
+/**
+ * A branch: `count` cards on an arc centred on `direction`, standing clear of a
+ * card of `fromSize`. It reaches further out rather than crowding — if the
+ * cards will not fit inside the wedge allowed, the arc moves outwards until
+ * they do.
+ *
+ * Returned relative to the card the branch grows from.
+ */
+export function branchLayout(
+  count: number,
+  fromSize: number,
+  direction: number,
+  maxWedge: number,
+) {
+  const clear = fromSize / 2 + ITEM_SIZE / 2 + REACH;
+  const radius = Math.max(clear, (count * ALONG_ARC) / maxWedge);
+  const step = ALONG_ARC / radius;
+  const wedge = step * count;
+
+  return Array.from({ length: count }, (_, i) =>
+    polar(radius, direction - wedge / 2 + step * (i + 0.5)),
+  );
 }
 
-/** Centres for `count` cards, evenly spaced, first one at the top. */
-export function ringPositions(count: number) {
-  const radius = ringRadius(count);
-  return Array.from({ length: count }, (_, i) => {
-    const angle = -Math.PI / 2 + (Math.PI * 2 * i) / count;
-    return { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius };
-  });
+/** How wide a branch may open. Deeper ones fan less, so they stay legible. */
+export const wedgeAt = (depth: number, branches: number) =>
+  depth === 0 ? Math.max(1.2, Math.min(2.3, (Math.PI * 2) / Math.max(branches, 1) - 0.6)) : 1.25;
+
+/**
+ * Badges on a card away from the middle point outwards, so a branch never
+ * folds back over the map. On the world itself they keep their even spread
+ * around the whole rim, since it has no outward.
+ */
+export function outwardBadgeAngles(count: number, outward: number, spread = 0.8) {
+  return Array.from({ length: count }, (_, i) => outward + (i - (count - 1) / 2) * spread);
 }
 
 /** React Flow positions from the top-left; the layout thinks in centres. */

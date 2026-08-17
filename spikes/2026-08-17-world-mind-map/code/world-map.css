@@ -104,10 +104,14 @@
   pointer-events: none;
 }
 
+/* Every badge is a category, and the place its branch grows from — so every
+   badge can be pressed, on the world and out on a branch alike. */
 .badge {
   position: absolute;
-  width: 30px;
-  height: 30px;
+  pointer-events: all;
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
@@ -127,6 +131,25 @@
   font-weight: 500;
 }
 
+.badge:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* An open branch is growing out of this badge. */
+.badge.is-open {
+  filter: brightness(1.35);
+}
+.badge-event.is-open {
+  box-shadow:
+    0 0 0 3px rgba(111, 155, 240, 0.22),
+    0 5px 12px rgba(0, 0, 0, 0.5);
+}
+.badge-object.is-open {
+  box-shadow:
+    0 0 0 3px rgba(69, 196, 165, 0.22),
+    0 5px 12px rgba(0, 0, 0, 0.5);
+}
+
 .badge-event {
   background: #1c2b46;
   border-color: #6f9bf0;
@@ -139,12 +162,7 @@
 }
 
 /* On the card in the middle a badge is a whole category, and the way into it. */
-.badges-open {
-  pointer-events: none;
-}
 .badges-open .badge {
-  pointer-events: all;
-  cursor: pointer;
   width: 104px;
   height: 104px;
   gap: 7px;
@@ -311,44 +329,8 @@
   transform: scale(1.03);
 }
 
-/* --- breadcrumb --------------------------------------------------------- */
-
-.breadcrumb {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: var(--panel);
-  border: 1px solid var(--panel-line);
-  backdrop-filter: blur(8px);
-}
-
-.crumb {
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 450;
-  letter-spacing: -0.004em;
-  color: var(--ink-soft);
-  background: none;
-  border: none;
-  padding: 3px 7px;
-  cursor: pointer;
-  border-radius: 7px;
-}
-.crumb:hover {
-  color: var(--ink-bright);
-  background: rgba(231, 233, 236, 0.07);
-}
-.crumb.here {
-  color: var(--ink-bright);
-  font-weight: 550;
-  cursor: default;
-}
-.crumb-sep {
-  color: rgba(231, 233, 236, 0.3);
-  font-size: 12px;
-}
+/* No breadcrumb any more. Nothing is navigated to, so there is no path back:
+   the world is always on the screen, and pressing it folds everything away. */
 
 /* --- the view switch ---------------------------------------------------- */
 

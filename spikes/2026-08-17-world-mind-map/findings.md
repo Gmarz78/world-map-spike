@@ -354,6 +354,40 @@ digit never shifts width as a bar is dragged.
 **Confidence:** proven that it builds and both suites still pass; assumed for
 how it looks.
 
+## 2026-08-17 — The world stops moving, and the map unfolds instead
+
+**Tried:** keeping the world in the middle permanently and growing an open
+category out of it as a branch, rather than replacing the middle card and
+navigating a level down.
+**Happened:** the spike came back round to the spider diagram it started as, but
+with everything learned since. Three things collapsed into one rule.
+
+- **There is no navigation left.** No screens below the map, no path back, no
+  breadcrumb — the whole of it is one canvas with the world always on it, and
+  what changes is how much is unfolded. `trailTo` survives only as the thing
+  that translates a timeline click into "grow these branches".
+- **Press a card, fold what it has open. Press a card with nothing open, rename
+  it.** Pressing the world putting the whole map away falls *out* of that rule
+  rather than being a special case, which is why it is worth stating that way.
+- **A branch grows in the direction its badge already points.** Events at 90°
+  fan right, Objects at 270° fan left, and out on a limb a card's badges are
+  turned outwards so a sub-branch never folds back over the middle. The badge
+  being the root of the limb is what keeps the picture legible with no lines
+  crossing.
+
+**The part that needed care:** folding a branch has to take everything that was
+only reachable through it, or the open set fills with categories hanging off
+cards that are no longer drawn. That is `foldAway`, pure and in `grouping.ts` so
+it could be checked: fold the world's events with the Siege's objects and the
+Ledger's events open beneath, and all three go at once.
+
+**Means:** adding is contextual for free — every open branch ends in its own
+`+ New event`, so which branch you press is which branch it joins, with no mode
+anywhere. The toolbar buttons remain as the way in when everything is folded.
+**Confidence:** proven for the folding rules (six assertions) and the branch
+membership; assumed for the whole look of it, which is the largest visual change
+in the spike so far and has not been seen.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:

@@ -8,34 +8,29 @@ but the pan and zoom — the same cards, the same names, the same relationships,
 read two ways.
 
 ### World map
-**Purpose:** see what the world is made of, one level at a time, and say what
-belongs to what by moving it there.
+**Purpose:** see what the world is made of, all at once or a limb at a time,
+and say what belongs to what by moving it there.
 
 **Contains:**
-- The **focused card** — a big circle at the middle of the screen, near three
-  times the width of anything around it. The world to begin with; whatever you
-  last opened after that. Under its name, a **sub-heading** naming what it is,
-  whose it is, and what that means:
-  - `A world — everything on the map belongs somewhere inside it`
-  - `Events of Aetheria — the 4 things that happen in it`
-  - `An event of Aetheria — something that happens there`
-  - `An object of Siege of Ravenhold — something that exists there`
-- **Its category badges** — large labelled circles on its rim, `Events 3`,
-  `Objects 1`, one per kind it holds. These are the way in.
-- **Its ring** — only when a *category* is in the middle: its members, standing
-  around it and joined by a thin line.
-- **The new-card slot** — on a category screen, a dashed circle reading
-  `+ New event`, standing off to the left, clear of the ring and joined to
-  nothing. The same size and colour as the members it would join, so it reads
-  as one of them, but plainly not one of them yet.
-- **Breadcrumb**, top centre — `Aetheria › Events › Siege of Ravenhold`. Every
-  crumb is a way back.
-- **Toolbar**, top left — the map's name, the rules of the gesture, `+ Event`,
-  `+ Object`, and how much is in the world.
+- The **world**, a big circle at the origin. It never moves and is never
+  replaced. Under its name, a sub-heading — `A world — everything on the map
+  belongs somewhere inside it`.
+- **Category badges** on its rim — large labelled circles, `Events 4`,
+  `Objects 2`, one per kind it holds.
+- **Branches.** An open category grows out of its badge, in the direction that
+  badge already points: its members on an arc, each joined to the world by a
+  thin line.
+- **Branches of branches.** A card out on a branch wears its own badges, small
+  and count-only, pointing outwards — press one and its members grow further
+  out again, in the same direction.
+- **The new-card slot** — a dashed `+ New event` in the last place on every open
+  arc, joined by a dashed line.
+- **Toolbar**, top left — the world's name, the rules of the gesture,
+  `+ Event`, `+ Object`, and how much of the world is showing.
 - **Canvas controls**, bottom left — zoom in, zoom out, fit.
 
 **Reached from:** it is the whole app.
-**Leads to:** itself, one level down.
+**Leads to:** nowhere. There is nothing to navigate to.
 
 ### Timeline
 **Purpose:** read the same world along its axis — what happens, where it falls,
@@ -53,9 +48,9 @@ and how long it runs.
 - **Lanes**, as many as the overlaps demand.
 
 **Reached from:** the view switch.
-**Leads to:** the map. Clicking a bar opens that event there, at exactly the
-depth it lives — `Aetheria › Events › Siege of Ravenhold`, worked out from what
-it belongs to.
+**Leads to:** the map. Clicking a bar **grows every branch on the way down to
+that event** — Aetheria's events, then the Crown's, and so on — so it is already
+standing there when the map appears.
 
 ## Rectangles, lanes, and what the numbers are called
 
@@ -152,35 +147,49 @@ Dates are the one place a bare number has to take a shape of its own: they are
 counted as days from an invented epoch of 1 January 1200. That epoch is a
 placeholder, not a decision.
 
-## Navigation
+## Navigation — there isn't any
 
-One screen. Movement is inward and outward, not sideways: click a badge to open
-that category, a card to go into it, a breadcrumb to come back out. The canvas
-pans and zooms, and re-frames itself when the depth changes.
+**Nothing is navigated to.** There are no screens below the map, no path back,
+and no breadcrumb, because the world never leaves the middle of the canvas.
+What changes is how much of it is unfolded.
 
-## Decomposition — the map alternates
+- **Press a badge** → that category grows out of it as a branch, or folds away.
+- **Press a card** → whatever it has open folds away.
+- **Press a card with nothing open** → rename it, in place.
 
-Two kinds of thing take the middle, turn about:
+So pressing the world puts the whole map away and leaves one circle. That falls
+out of the rule rather than being a special case, which is the point of writing
+it that way.
 
-- **A card** — the world, an event, an object. It has **no ring at all**. What
-  it holds is worn on its rim as categories: `Events 3`, `Objects 1`.
-- **A category** — `Events`, `Objects`. Its **members stand around it** in a
-  ring, drawn as themselves.
+Folding a branch folds **everything that was hanging off it**, because a branch
+only exists while the card it grows from is on the map. Open Events, open the
+Siege's Objects, open the Ledger's Events, then fold Events: the whole limb goes
+at once, and nothing is left orphaned in the open set.
 
-So the way down is: Aetheria → click `Events 3` → the three events in a ring →
-click Siege of Ravenhold → the Siege in the middle, wearing `Objects 1` →
-click that → the Salt Ledger. Cards and categories, alternating.
+The canvas re-frames itself whenever a branch opens or closes.
+
+## Branches
 
 A category is a **way of drawing, not a thing that exists**. Its identity is
 just the card it hangs off and the kind it gathers, so nothing about grouping is
-stored: change what belongs to what and the categories re-form by themselves.
-Move the last event away and the `Events` badge simply stops being worn — there
-is nothing to delete.
+stored: change what belongs to what and the branches re-form by themselves. Move
+the last event away and the `Events` badge simply stops being worn — there is
+nothing to delete.
 
-The consequence to watch: at every card level, the middle is a lone circle with
-badges and nothing else on the canvas. The spider diagram now exists only
-*inside* a category. A world of any size opens the same way, which is the point,
-but the top level is no longer a picture of the world so much as a way in to it.
+**A branch grows in the direction its badge points.** The Events badge sits at
+90° on the world's rim, so the events fan out to the right of it; Objects at
+270°, so they fan left. The badge is the root of the limb, which makes the
+picture legible without any lines having to cross.
+
+Out on a branch, a card's own badges are turned to **point outwards** from the
+card that grew it — so a sub-branch never folds back over the middle of the map.
+On the world itself they keep their even spread around the whole rim, because
+the world has no outward.
+
+**A branch reaches rather than crowds.** Members are spaced a fixed distance
+apart along their arc, and if they will not fit inside the wedge allowed, the
+arc moves further out until they do. Deeper branches fan less widely than the
+first, so a limb narrows as it goes.
 
 ## Badges
 
@@ -195,16 +204,17 @@ arc, so adding a kind re-spaces the lot rather than crowding a side.
 A **pair is turned a quarter** so it sits horizontally, at 90° and 270° —
 still opposite, but flanking the name rather than stacked above and below it.
 
-They are read two ways depending on where the card is standing:
+They are drawn two ways depending on where the card is standing, but **every one
+of them opens a branch**:
 
-- **In the middle** they are large, carry the category name and the count, and
-  are **clickable** — this is the way in. `Events` over `3`.
-- **In the ring, or adrift** they are small and carry the count alone, saying
-  what is one level further down than the ring actually draws.
+- **On the world** they are large and carry the category name over the count —
+  `Events` over `4`.
+- **Out on a branch** they are small and carry the count alone, and they are
+  fanned to point outwards rather than spread around the whole rim.
 
-A card holding nothing wears nothing, so a bare rim means a leaf. **A category
-in the middle wears nothing either** — you are already inside it, and the ring
-around it is the count.
+An open badge is brighter and wears a soft ring of its own colour, so a card
+says at a glance which of its limbs are unfolded. A card holding nothing wears
+nothing, so a bare rim means a leaf.
 
 ## Nothing floats
 
@@ -213,30 +223,23 @@ no staging area, and nothing adrift on the canvas at any depth.
 
 Two rules keep it that way:
 
-- **A new card belongs to whatever is in the middle.** `+ Event` while looking
-  at Aetheria makes an event of Aetheria's; while looking at the Siege of
-  Ravenhold, one of the Siege's. Pressed while a category is in the middle, it
-  belongs to the card that category hangs off, so the kind you press decides
-  which category it lands in, not where you happen to be standing.
-- **A category screen carries its own new-card slot.** Inside `Events`, a
-  dashed `+ New event` stands off to the left of the ring — so once you are
-  inside a category, adding is part of the picture rather than part of the
-  chrome. The toolbar buttons take you to the right category and open a draft
-  there, so a card is always named in the place it will stand.
-
-  It sits **outside the ring rather than in it**: a place in the ring implied
-  it was already one of the members, and drew a line to the parent for
-  something that does not belong to it yet. Off to one side, unjoined, it reads
-  as a card waiting to be made.
+- **Every open branch ends in a new-card slot.** The last place on each arc is a
+  dashed `+ New event`, joined to its card by a dashed line — so a card is
+  always made among the cards it will stand with, and every branch on the map
+  can be added to without going anywhere. Which branch you press is which
+  branch it joins: the context decides, not a mode.
+- **The toolbar acts on the world.** `+ Event` opens the world's events branch
+  if it is folded and puts a draft on it; `+ Object` the same. They are the way
+  in when nothing is unfolded, and they still name the card where it will stand.
 
 ## Making a card
 
 Nothing is created by pressing. **A card comes into being when it is named.**
 
 1. Press the slot. The `+` gives way to a field reading `Name the event`, in
-   place, off to the left where the slot stands. Nothing exists yet.
+   place, at the end of the branch where the slot stands. Nothing exists yet.
 2. Type, and press Enter. Only now is the card made and given to the parent.
-3. It **travels from the slot into its place in the ring** while the ring
+3. It **travels from the slot into its place on the branch** while the arc
    re-spaces around it to make room, and the view eases out to keep the whole
    of it in frame — about half a second for all three.
 
@@ -270,16 +273,15 @@ Consequences, all deliberate:
 
 - There is no second way to relate two things. No menu, no unlink button, no
   drawing a wire between two ports.
-- Cards in a ring cannot be positioned by hand. The ring decides.
+- Cards on a branch cannot be positioned by hand. The arc decides.
 - Nothing can be dropped inside itself or anything below it.
-- Clicking is navigation, so **rename is a click on the middle card** — the one
-  place a click has nowhere further to go. A drag that ends on top of the card
-  being dragged does not count as a click.
+- **Rename is a press on a card with nothing open**, which is the same rule as
+  folding — a card with nothing to fold has nothing else a press could mean. A
+  drag that ends on top of the card being dragged does not count as a press.
 - **The new-card slot is somewhere to press, never somewhere to land.** It is
-  not a drop target, cannot be dragged, and has no line to anything.
-- **At world level there is nothing to drag.** A card in the middle has no ring
-  and nothing floats, so the only things on the canvas are the world and its
-  badges. Dragging — and making things — both live inside a category.
+  not a drop target and cannot be dragged.
+- **Dragging needs a branch open.** With everything folded there is only the
+  world on the canvas, so opening something is the first thing you do.
 
 ## Look and feel
 
@@ -331,13 +333,15 @@ Consequences, all deliberate:
 
 ## Open questions
 
-- **Every card level is a lone circle.** With categories on the rim and no ring,
-  the middle card has nothing around it but its own badges and whatever is
-  adrift. The picture is now only ever drawn one layer at a time, and the world
-  screen is a way in rather than a view.
-- **A category of one still costs a click.** `Objects 1` opens onto a single
-  card. Whether one member should just be shown, and only pairs upward gather,
-  is the same threshold question that was there before, now moved.
+- **A wide world may outgrow its wedge.** A branch reaches further out rather
+  than crowding, so a category with thirty members ends up a long way from the
+  middle. Whether it should wrap, scroll, or gather again at some size is open.
+- **Two branches can grow into each other.** Their directions come from where
+  their badges sit, and nothing checks whether a limb of one collides with a
+  limb of another once both are several levels deep.
+- **A category of one still costs a press.** `Objects 1` opens onto a single
+  card. Whether one member should simply be drawn, and only pairs upward need
+  unfolding, is the same threshold question that was there before, now moved.
 - **Kind is the only thing categories are made of.** Regions, arcs, factions,
   chapters — none of them can gather anything, because the split is hardcoded to
   event-versus-object.

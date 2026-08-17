@@ -8,9 +8,10 @@ npm install && npm run dev
 
 Then <http://localhost:5173>. Nothing is saved — reload and it starts over.
 
-The world is the circle in the middle. Events and objects become part of it by
-being dragged onto it, and stop being part of it by being dragged off. That one
-gesture is what the spike is for.
+The world is the circle in the middle, and it stays there. Press a badge on its
+rim and that category unfolds as a branch; press a card to fold away what it has
+open. Events and objects become part of something by being dragged onto it, and
+that gesture is what the spike is for.
 
 There is a second view of the same world — a **timeline** of everything that
 happens in it, one after another — reached from the pill at the top right. Same

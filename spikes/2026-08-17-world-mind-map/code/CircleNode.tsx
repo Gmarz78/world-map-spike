@@ -1,6 +1,6 @@
 import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
-import { showsBadges, type Badge, type Kind } from './grouping';
-import { badgeAngles, rimPercent } from './layout';
+import type { Badge, Kind } from './grouping';
+import { rimPercent } from './layout';
 
 /** Where a card is standing right now, which is not a property of the card. */
 export type Role = 'centre' | 'ring' | 'loose';
@@ -10,14 +10,16 @@ export type MapNodeData = {
   subtitle: string;
   kind: Kind;
   role: Role;
-  isGroup: boolean;
   isAdd: boolean;
   badges: Badge[];
+  /** Where each badge sits on the rim, decided by the layout, not the card. */
+  badgeAt: number[];
+  open: string[];
   dropTarget: boolean;
   editing: boolean;
   onRename: (id: string, label: string) => void;
   onEditDone: () => void;
-  onOpenBadge: (badgeId: string) => void;
+  onToggleBranch: (categoryId: string) => void;
   [key: string]: unknown;
 };
 
@@ -40,23 +42,20 @@ const hiddenHandle = {
 };
 
 export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
-  // In the middle, a badge is a whole category and the way into it. Elsewhere
-  // it is only a count, small, saying what is inside without being the way in.
-  const isWayIn = data.role === 'centre';
+  // In the middle a badge is large enough to carry the category's name. Out on
+  // a branch it is small and carries only the count — but both open.
+  const roomForName = data.role === 'centre';
 
   const classes = [
     'circle-node',
     `kind-${data.kind}`,
     `role-${data.role}`,
-    data.isGroup ? 'is-group' : '',
     data.isAdd ? 'is-add' : '',
     data.dropTarget ? 'drop-target' : '',
     selected && data.role !== 'centre' ? 'is-selected' : '',
   ]
     .filter(Boolean)
     .join(' ');
-
-  const angles = badgeAngles(data.badges.length);
 
   return (
     <div className={classes}>
@@ -66,9 +65,7 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
       <span className="card-face">
         {data.isAdd && !data.editing && <span className="plus">+</span>}
 
-        {/* In the ring, a card wears its kind above its name. In the middle
-            that job is done by the sub-heading below it instead. */}
-        {data.kind !== 'world' && !data.isGroup && !data.isAdd && !isWayIn && (
+        {data.kind !== 'world' && !data.isAdd && !roomForName && (
           <span className="kind-tag">{data.kind}</span>
         )}
 
@@ -98,28 +95,28 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
           <span className="label">{data.label}</span>
         )}
 
-        {isWayIn && data.subtitle && <span className="subtitle">{data.subtitle}</span>}
+        {roomForName && data.subtitle && <span className="subtitle">{data.subtitle}</span>}
       </span>
 
-      {showsBadges(data.isGroup, data.role) && data.badges.length > 0 && (
-        <span className={isWayIn ? 'badges badges-open' : 'badges'}>
+      {/* Each badge is a category, and the place its branch grows from. */}
+      {data.badges.length > 0 && (
+        <span className={roomForName ? 'badges badges-open' : 'badges'}>
           {data.badges.map((badge, i) => {
-            const { left, top } = rimPercent(angles[i]);
+            const { left, top } = rimPercent(data.badgeAt[i] ?? 0);
+            const isOpen = data.open.includes(badge.id);
+
             return (
               <span
                 key={badge.kind}
-                className={`nodrag badge badge-${badge.kind}`}
+                className={`nodrag badge badge-${badge.kind}${isOpen ? ' is-open' : ''}`}
                 style={{ left: `${left}%`, top: `${top}%` }}
-                onClick={
-                  isWayIn
-                    ? (e) => {
-                        e.stopPropagation();
-                        data.onOpenBadge(badge.id);
-                      }
-                    : undefined
-                }
+                title={isOpen ? `Close ${badge.label}` : `Open ${badge.label}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  data.onToggleBranch(badge.id);
+                }}
               >
-                {isWayIn && <span className="badge-label">{badge.label}</span>}
+                {roomForName && <span className="badge-label">{badge.label}</span>}
                 <span className="badge-count">{badge.count}</span>
               </span>
             );

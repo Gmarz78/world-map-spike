@@ -72,11 +72,48 @@ export function badgesFor(id: string, items: Items, parents: Parents): Badge[] {
   return badges;
 }
 
+/** Every category a card holds that is currently open. */
+export const openBranches = (id: string, items: Items, parents: Parents, open: Set<string>) =>
+  badgesFor(id, items, parents).filter((badge) => open.has(badge.id));
+
 /**
- * A stack in the middle wears no badge: you are already inside it, and the ring
- * around it is the count.
+ * Fold branches away, and with them everything that was only reachable through
+ * them. A branch hangs off a card, and that card is only on the map because the
+ * branch above it is open — so closing one high up takes the whole limb.
  */
-export const showsBadges = (isGroup: boolean, role: string) => !(isGroup && role === 'centre');
+export function foldAway(
+  closing: string[],
+  items: Items,
+  parents: Parents,
+  open: Set<string>,
+  worldId: string,
+): Set<string> {
+  const next = new Set(open);
+  for (const id of closing) next.delete(id);
+
+  const stillOnTheMap = (categoryId: string): boolean => {
+    const owner = parseGroup(categoryId)?.owner;
+    if (!owner) return false;
+    if (owner === worldId) return true;
+
+    const parent = parents[owner];
+    if (!parent || !items[owner]) return false;
+    const through = groupId(parent, items[owner].kind);
+    return next.has(through) && stillOnTheMap(through);
+  };
+
+  let pruned = true;
+  while (pruned) {
+    pruned = false;
+    for (const id of [...next]) {
+      if (!stillOnTheMap(id)) {
+        next.delete(id);
+        pruned = true;
+      }
+    }
+  }
+  return next;
+}
 
 /** Dropping onto a group means dropping onto the card the group hangs off. */
 export const resolveTarget = (id: string) => parseGroup(id)?.owner ?? id;
@@ -84,27 +121,9 @@ export const resolveTarget = (id: string) => parseGroup(id)?.owner ?? id;
 export const childrenOf = (id: string, parents: Parents) =>
   Object.keys(parents).filter((c) => parents[c] === id);
 
-export type RingEntry = {
-  id: string;
-  kind: Kind;
-  label: string;
-  isGroup: boolean;
-  count: number;
-};
-
-/**
- * The map alternates. A **card** in the middle has no ring at all: what it
- * holds is worn on its rim as categories. A **category** in the middle has its
- * members standing around it.
- */
-export function ringEntries(focus: string, items: Items, parents: Parents): RingEntry[] {
-  const group = parseGroup(focus);
-  if (!group) return [];
-
-  return childrenOf(group.owner, parents)
-    .filter((id) => items[id]?.kind === group.kind)
-    .map((id) => ({ id, kind: items[id].kind, label: items[id].label, isGroup: false, count: 1 }));
-}
+/** What a card holds of one kind, in the order it was written down. */
+export const membersOf = (owner: string, kind: Kind, items: Items, parents: Parents) =>
+  childrenOf(owner, parents).filter((id) => items[id]?.kind === kind);
 
 export function labelOf(id: string, items: Items) {
   const group = parseGroup(id);
