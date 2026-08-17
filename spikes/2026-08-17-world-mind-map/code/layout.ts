@@ -11,13 +11,17 @@ export const ITEM_SIZE = 128;
 const MIN_RADIUS = 380;
 const SPACING = 50;
 
-/** Badges sit along the bottom arc of a card, fanned out from the middle. */
+/**
+ * Badges are spread evenly right around a card's rim, clockwise from midnight:
+ * two sit at 180° and 360°, three at 120°, 240° and 360°, and so on — so the
+ * last one always lands at the top.
+ */
 export function badgeAngles(count: number) {
-  const step = (52 * Math.PI) / 180;
-  return Array.from(
-    { length: count },
-    (_, i) => Math.PI / 2 + (i - (count - 1) / 2) * step,
-  );
+  return Array.from({ length: count }, (_, i) => {
+    const clockwiseFromMidnight = ((i + 1) * 360) / count;
+    // Screen angles run from 3 o'clock with y downwards, so midnight is -90°.
+    return ((clockwiseFromMidnight - 90) * Math.PI) / 180;
+  });
 }
 
 /** A point on the rim, as percentages, for placing a badge with CSS. */

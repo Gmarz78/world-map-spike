@@ -151,8 +151,9 @@ Details that came up and were decided in passing, all cheap to change:
   the world rearranges the ring rather than leaving it where the hand let go.
 - **Events come before objects**, always, so the shape does not jump about as
   things are added.
-- **A category badge is 104px on a 340px card**, fanned along the bottom arc at
-  52° apart — room for about four before they meet.
+- **A category badge is 104px on a 340px card**, and badges divide the rim
+  evenly, clockwise from midnight, with the last always at the top. Two
+  therefore sit at bottom and top, not side by side.
 - **Clicking a badge does not select the card under it.** The click stops there.
 - **Loose cards are visible at every depth**, not only at the top, or there
   would be nowhere to drag them from once you had gone inside something.

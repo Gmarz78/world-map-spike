@@ -59,8 +59,13 @@ but the top level is no longer a picture of the world so much as a way in to it.
 ## Badges
 
 **A card says what is inside it without being opened**, in coloured circles on
-its rim — blue for events, green for objects, always in that order, fanned
-along the bottom arc.
+its rim — blue for events, green for objects, always in that order.
+
+They are spread **evenly right around the rim**, clockwise from midnight, so
+the last one always lands at the top: one sits at midnight; two at 180° and
+360°; three at 120°, 240° and 360°. The spacing is a division of the whole
+circle, not a fan across the bottom, so adding a kind re-spaces the lot rather
+than crowding one arc.
 
 They are read two ways depending on where the card is standing:
 
@@ -135,8 +140,9 @@ Consequences, all deliberate:
 - **Kind is the only thing categories are made of.** Regions, arcs, factions,
   chapters — none of them can gather anything, because the split is hardcoded to
   event-versus-object.
-- **Badges have room for about four.** They fan along the bottom arc at 52°
-  apart; characters, locations and factions would fill it.
+- **Badges divide the whole rim,** so two of them sit at the top and the bottom
+  rather than side by side at the lower corners. Whether a vertical pair reads
+  as well as the fan did is worth a look.
 - **Are loose cards adrift or in a tray?** They float wherever they were
   dropped, at every depth, which will scatter as the world grows.
 - **What is a relationship between two objects?** The map only expresses

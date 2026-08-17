@@ -116,7 +116,7 @@
   cursor: pointer;
   width: 104px;
   height: 104px;
-  gap: 2px;
+  gap: 7px;
   border-width: 2px;
   box-shadow:
     0 0 0 5px rgba(13, 16, 23, 0.92),
@@ -128,6 +128,7 @@
 .badges-open .badge-label {
   font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   font-size: 15px;
+  line-height: 1;
   letter-spacing: 0.02em;
 }
 .badges-open .badge-count {
