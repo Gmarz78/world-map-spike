@@ -112,15 +112,34 @@ export function labelOf(id: string, items: Items) {
  */
 export function subtitleFor(id: string, items: Items, parents: Parents): string {
   const group = parseGroup(id);
-  if (group) return `${groupLabel(group.kind)} of ${labelOf(group.owner, items)}`;
+  if (group) {
+    const count = childrenOf(group.owner, parents).filter(
+      (c) => items[c]?.kind === group.kind,
+    ).length;
+    const things = count === 1 ? 'thing' : 'things';
+    const doing =
+      group.kind === 'event'
+        ? count === 1
+          ? 'happens'
+          : 'happen'
+        : count === 1
+          ? 'exists'
+          : 'exist';
+    return `${groupLabel(group.kind)} of ${labelOf(group.owner, items)} — the ${count} ${things} that ${doing} in it`;
+  }
 
   const item = items[id];
   if (!item) return '';
-  if (item.kind === 'world') return 'A world, and everything in it';
+  if (item.kind === 'world') {
+    return 'A world — everything on the map belongs somewhere inside it';
+  }
 
   const article = item.kind === 'event' ? 'An event' : 'An object';
+  const doing = item.kind === 'event' ? 'happens' : 'exists';
   const parent = parents[id];
-  return parent ? `${article} of ${labelOf(parent, items)}` : article;
+  return parent
+    ? `${article} of ${labelOf(parent, items)} — something that ${doing} there`
+    : `${article} — something that ${doing}`;
 }
 
 export const kindOf = (id: string, items: Items): Kind =>

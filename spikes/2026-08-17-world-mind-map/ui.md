@@ -9,9 +9,12 @@ belongs to what by moving it there.
 **Contains:**
 - The **focused card** — a big circle at the middle of the screen, near three
   times the width of anything around it. The world to begin with; whatever you
-  last opened after that. Under its name, a **sub-heading** saying what it is
-  and whose: `A world, and everything in it`, `Events of Aetheria`, `An object
-  of Siege of Ravenhold`.
+  last opened after that. Under its name, a **sub-heading** naming what it is,
+  whose it is, and what that means:
+  - `A world — everything on the map belongs somewhere inside it`
+  - `Events of Aetheria — the 4 things that happen in it`
+  - `An event of Aetheria — something that happens there`
+  - `An object of Siege of Ravenhold — something that exists there`
 - **Its category badges** — large labelled circles on its rim, `Events 3`,
   `Objects 1`, one per kind it holds. These are the way in.
 - **Its ring** — only when a *category* is in the middle: its members, standing
@@ -142,6 +145,11 @@ Consequences, all deliberate:
   carries a sub-heading, and it drops the small uppercase kind tag that ring
   cards wear, since the sub-heading already says `An event of Aetheria`. In the
   ring a card is understood by the company it is standing in.
+- **The sub-heading is a sentence, not a label.** It names the kind, names the
+  parent, and then says plainly what that kind means — *something that happens
+  there*, *something that exists there* — so the vocabulary of the model is
+  taught by the interface rather than assumed. A category also carries its count
+  in words there, which is where the bare number went when it left the middle.
 - **Size carries depth.** The middle card is 340px against the ring's 128 —
   near three times the width, so what you are looking *at* is never confused
   with what is standing around it. It is also what makes a badge big enough to
