@@ -153,6 +153,9 @@
 
 /* --- kinds -------------------------------------------------------------- */
 
+.kind-world {
+  box-shadow: 0 22px 50px rgba(0, 0, 0, 0.55);
+}
 .kind-world .card-face {
   background: radial-gradient(circle at 38% 32%, #3a2f1c 0%, #241d12 72%);
   border: 2px solid #d9a441;
@@ -177,9 +180,7 @@
 
 .role-centre {
   cursor: text;
-  box-shadow:
-    0 0 0 10px rgba(255, 255, 255, 0.025),
-    0 24px 55px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 24px 55px rgba(0, 0, 0, 0.55);
 }
 .role-centre .label {
   font-size: 20px;
