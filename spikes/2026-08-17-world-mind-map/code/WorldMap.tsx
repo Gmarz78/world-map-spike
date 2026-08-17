@@ -29,14 +29,7 @@ import {
   type Kind,
   type Parents,
 } from './grouping';
-import {
-  CENTRE_SIZE,
-  GROUP_SIZE,
-  ITEM_SIZE,
-  ringPositions,
-  toCentre,
-  toTopLeft,
-} from './layout';
+import { CENTRE_SIZE, ITEM_SIZE, ringPositions, toCentre, toTopLeft } from './layout';
 import './world-map.css';
 
 // ---------------------------------------------------------------------------
@@ -69,8 +62,8 @@ const SEED_PARENTS: Parents = {
 /** What a card is, before the live bits (highlight, rename) are stitched on. */
 type CardSpec = { label: string; kind: Kind; role: Role; isGroup: boolean; badges: Badge[] };
 
-export const sizeOf = (data: { role: string; isGroup: boolean }) =>
-  data.role === 'centre' ? CENTRE_SIZE : data.isGroup ? GROUP_SIZE : ITEM_SIZE;
+export const sizeOf = (data: { role: string }) =>
+  data.role === 'centre' ? CENTRE_SIZE : ITEM_SIZE;
 
 // ---------------------------------------------------------------------------
 
@@ -79,6 +72,7 @@ const blankData = {
   editing: false,
   onRename: () => {},
   onEditDone: () => {},
+  onOpenBadge: () => {},
 };
 
 /** The whole picture, from the focus down one level, plus whatever is adrift. */
@@ -210,6 +204,12 @@ function WorldMapCanvas() {
   }, []);
   const stopEditing = useCallback(() => setEditingId(null), []);
 
+  /** A badge on the middle card is a category; clicking it goes there. */
+  const openBadge = useCallback((badgeId: string) => {
+    setEditingId(null);
+    setTrail((t) => [...t, badgeId]);
+  }, []);
+
   /** Which card is this one being held over? Nearest overlapping centre wins. */
   const hitTest = useCallback(
     (dragged: MapNode, all: MapNode[]) => {
@@ -313,15 +313,19 @@ function WorldMapCanvas() {
           dropTarget: n.id === dropTargetId,
           onRename: rename,
           onEditDone: stopEditing,
+          onOpenBadge: openBadge,
         },
       })),
-    [nodes, editingId, dropTargetId, rename, stopEditing],
+    [nodes, editingId, dropTargetId, rename, stopEditing, openBadge],
   );
 
   const unplaced = Object.values(items).filter(
     (i) => i.kind !== 'world' && !parents[i.id],
   ).length;
-  const ringCount = nodes.filter((n) => n.data.role === 'ring').length;
+  // A card in the middle holds things through its badges, not through a ring.
+  const centreHolds = nodes.some(
+    (n) => n.data.role === 'ring' || (n.data.role === 'centre' && n.data.badges.length > 0),
+  );
 
   return (
     // Sized inline as well as in CSS: in dev the stylesheet arrives after the
@@ -364,14 +368,15 @@ function WorldMapCanvas() {
           <div className="toolbar-title">World map</div>
           <div className="toolbar-hint">
             Drag a card onto another to make it belong there. Drop it on empty space to take it
-            out again. Click a card to go into it; click the middle one to rename it.
+            out again. Click a badge to open that category, a card to go into it, and the middle
+            card to rename it.
           </div>
           <div className="toolbar-actions">
             <button onClick={() => addCard('event')}>+ Event</button>
             <button onClick={() => addCard('object')}>+ Object</button>
           </div>
           <div className="toolbar-count">
-            {ringCount === 0
+            {!centreHolds
               ? `Nothing belongs to ${labelOf(focus, items)} yet`
               : unplaced === 0
                 ? 'Everything is placed'

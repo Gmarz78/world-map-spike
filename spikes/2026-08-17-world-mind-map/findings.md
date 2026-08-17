@@ -121,6 +121,25 @@ every other card — which is a claim about what a stack *is*, and worth
 watching: nothing but the plural label distinguishes a place you can go into
 from a thing that is already there.
 
+## 2026-08-17 — The badges became the hierarchy
+
+**Tried:** making the middle card much bigger so its badges could carry a word,
+and putting the categories on it — `Events 3`, `Objects 1` — instead of
+orbiting it.
+**Happened:** the shape of the map changed rather than its decoration. Once a
+category is a badge on the card, it is no longer in the ring, and a card in the
+middle has no ring at all. The map now **alternates**: a card wears its
+categories, a category rings its members, a member becomes a card wearing its
+own categories. The count threshold went with it — there is no longer any point
+at which two of a kind start behaving differently from one, so `GROUP_AT` was
+deleted.
+**Means:** the top level is a way in rather than a view. A world of any size
+opens identically, which was the goal, but the spider diagram now only exists
+inside a category, and every card level is a lone circle with badges. That is
+the thing to look at hardest.
+**Confidence:** proven for the rules (23 assertions, rewritten for the
+alternation), assumed for whether it reads as a map at all any more.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:
@@ -130,10 +149,11 @@ Details that came up and were decided in passing, all cheap to change:
 - **Attached cards have no position of their own.** Where a card sits falls out
   of whose child it is and how many siblings it has, so dropping something on
   the world rearranges the ring rather than leaving it where the hand let go.
-- **The stacking threshold is two.** One event shows as itself; two become
-  `Events`. `GROUP_AT` in `grouping.ts`, one number.
-- **Events come before objects** in the ring, always, so the shape does not
-  jump about as things are added.
+- **Events come before objects**, always, so the shape does not jump about as
+  things are added.
+- **A category badge is 104px on a 340px card**, fanned along the bottom arc at
+  52° apart — room for about four before they meet.
+- **Clicking a badge does not select the card under it.** The click stops there.
 - **Loose cards are visible at every depth**, not only at the top, or there
   would be nowhere to drag them from once you had gone inside something.
 - **Dropping an object on the `Events` stack** attaches it to the world and it

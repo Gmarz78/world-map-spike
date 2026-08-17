@@ -74,29 +74,26 @@
 
 .badge {
   position: absolute;
-  width: 27px;
-  height: 27px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  font-size: 11.5px;
   font-variant-numeric: tabular-nums;
   border: 1.5px solid;
   transform: translate(-50%, -50%);
   box-shadow:
     0 0 0 3px rgba(13, 16, 23, 0.92),
-    0 4px 10px rgba(0, 0, 0, 0.5);
+    0 5px 12px rgba(0, 0, 0, 0.5);
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease;
 }
 
-/* Slots sit on the circle itself, at the two lower corners. */
-.badge.slot-0 {
-  left: 85.35%;
-  top: 85.35%;
-}
-.badge.slot-1 {
-  left: 14.65%;
-  top: 85.35%;
+.badge-count {
+  font-size: 12px;
 }
 
 .badge-event {
@@ -110,10 +107,32 @@
   color: #cdf1e6;
 }
 
-.role-centre .badge {
-  width: 34px;
-  height: 34px;
-  font-size: 13.5px;
+/* On the card in the middle a badge is a whole category, and the way into it. */
+.badges-open {
+  pointer-events: none;
+}
+.badges-open .badge {
+  pointer-events: all;
+  cursor: pointer;
+  width: 104px;
+  height: 104px;
+  gap: 2px;
+  border-width: 2px;
+  box-shadow:
+    0 0 0 5px rgba(13, 16, 23, 0.92),
+    0 10px 24px rgba(0, 0, 0, 0.55);
+}
+.badges-open .badge:hover {
+  transform: translate(-50%, -50%) scale(1.06);
+}
+.badges-open .badge-label {
+  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  font-size: 15px;
+  letter-spacing: 0.02em;
+}
+.badges-open .badge-count {
+  font-size: 13px;
+  opacity: 0.62;
 }
 
 .circle-node .label-input {

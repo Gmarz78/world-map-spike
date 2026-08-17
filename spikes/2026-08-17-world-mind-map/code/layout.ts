@@ -2,12 +2,28 @@
 // stand around it; everything deeper is reached by clicking in, not by drawing
 // it smaller.
 
-export const CENTRE_SIZE = 180;
-export const ITEM_SIZE = 116;
-export const GROUP_SIZE = 130;
+// The middle of the map is much larger than its ring: big enough to carry
+// labelled badges on its rim, and to read as the thing everything else is
+// hanging off.
+export const CENTRE_SIZE = 340;
+export const ITEM_SIZE = 128;
 
-const MIN_RADIUS = 300;
-const SPACING = 46;
+const MIN_RADIUS = 380;
+const SPACING = 50;
+
+/** Badges sit along the bottom arc of a card, fanned out from the middle. */
+export function badgeAngles(count: number) {
+  const step = (52 * Math.PI) / 180;
+  return Array.from(
+    { length: count },
+    (_, i) => Math.PI / 2 + (i - (count - 1) / 2) * step,
+  );
+}
+
+/** A point on the rim, as percentages, for placing a badge with CSS. */
+export function rimPercent(angle: number) {
+  return { left: 50 + 50 * Math.cos(angle), top: 50 + 50 * Math.sin(angle) };
+}
 
 export function ringRadius(count: number) {
   return Math.max(MIN_RADIUS, (count * SPACING) / 1.6);

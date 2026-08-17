@@ -18,9 +18,6 @@ export type Item = {
 export type Items = Record<string, Item>;
 export type Parents = Record<string, string | null>;
 
-/** More than one of a kind and they stop being cards; they become a place to go into. */
-export const GROUP_AT = 2;
-
 export const groupId = (owner: string, kind: Kind) => `grp:${owner}:${kind}`;
 
 export function parseGroup(id: string): { owner: string; kind: Kind } | null {
@@ -31,26 +28,30 @@ export function parseGroup(id: string): { owner: string; kind: Kind } | null {
 
 export const groupLabel = (kind: Kind) => (kind === 'event' ? 'Events' : 'Objects');
 
-export type Badge = { kind: Kind; count: number };
+export type Badge = { id: string; kind: Kind; label: string; count: number };
 
 /**
- * What a card holds, by kind — worn on its rim as a small coloured circle, so
- * a card says what is inside it without being opened.
+ * What a card holds, by kind, worn on its rim — a card says what is inside it
+ * without being opened. On the card in the middle these are the way in: each
+ * badge is a whole category, and clicking one goes to it.
  */
 export function badgesFor(id: string, items: Items, parents: Parents): Badge[] {
+  // A stack holds one kind: itself. Its own badge would only repeat its name.
   const group = parseGroup(id);
   if (group) {
     const count = childrenOf(group.owner, parents).filter(
       (c) => items[c]?.kind === group.kind,
     ).length;
-    return count ? [{ kind: group.kind, count }] : [];
+    return count
+      ? [{ id, kind: group.kind, label: groupLabel(group.kind), count }]
+      : [];
   }
 
   const kids = childrenOf(id, parents);
   const badges: Badge[] = [];
   for (const kind of ['event', 'object'] as Kind[]) {
     const count = kids.filter((c) => items[c]?.kind === kind).length;
-    if (count) badges.push({ kind, count });
+    if (count) badges.push({ id: groupId(id, kind), kind, label: groupLabel(kind), count });
   }
   return badges;
 }
@@ -75,36 +76,18 @@ export type RingEntry = {
   count: number;
 };
 
+/**
+ * The map alternates. A **card** in the middle has no ring at all: what it
+ * holds is worn on its rim as categories. A **category** in the middle has its
+ * members standing around it.
+ */
 export function ringEntries(focus: string, items: Items, parents: Parents): RingEntry[] {
   const group = parseGroup(focus);
+  if (!group) return [];
 
-  // Inside a stack: the cards themselves, never re-stacked.
-  if (group) {
-    return childrenOf(group.owner, parents)
-      .filter((id) => items[id]?.kind === group.kind)
-      .map((id) => ({ id, kind: items[id].kind, label: items[id].label, isGroup: false, count: 1 }));
-  }
-
-  const kids = childrenOf(focus, parents);
-  const entries: RingEntry[] = [];
-
-  for (const kind of ['event', 'object'] as Kind[]) {
-    const ofKind = kids.filter((id) => items[id]?.kind === kind);
-    if (ofKind.length >= GROUP_AT) {
-      entries.push({
-        id: groupId(focus, kind),
-        kind,
-        label: groupLabel(kind),
-        isGroup: true,
-        count: ofKind.length,
-      });
-    } else if (ofKind.length === 1) {
-      const id = ofKind[0];
-      entries.push({ id, kind, label: items[id].label, isGroup: false, count: 1 });
-    }
-  }
-
-  return entries;
+  return childrenOf(group.owner, parents)
+    .filter((id) => items[id]?.kind === group.kind)
+    .map((id) => ({ id, kind: items[id].kind, label: items[id].label, isGroup: false, count: 1 }));
 }
 
 export function labelOf(id: string, items: Items) {

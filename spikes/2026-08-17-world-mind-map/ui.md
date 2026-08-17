@@ -7,10 +7,13 @@
 belongs to what by moving it there.
 
 **Contains:**
-- The **focused card** — a large circle at the middle of the screen. The world
-  to begin with; whatever you last clicked into after that.
-- **Its ring** — what belongs to the focused card, standing around it and joined
-  to it by a thin line. Nothing deeper is drawn.
+- The **focused card** — a big circle at the middle of the screen, near three
+  times the width of anything around it. The world to begin with; whatever you
+  last opened after that.
+- **Its category badges** — large labelled circles on its rim, `Events 3`,
+  `Objects 1`, one per kind it holds. These are the way in.
+- **Its ring** — only when a *category* is in the middle: its members, standing
+  around it and joined by a thin line.
 - **Loose cards** — events and objects that belong to nothing yet, sitting
   wherever they were left. Dashed border, slightly dimmed. Visible at every
   depth, because there has to be somewhere to drag them from.
@@ -25,48 +28,50 @@ belongs to what by moving it there.
 
 ## Navigation
 
-One screen. Movement is inward and outward, not sideways: click a card to make
-it the middle, click a breadcrumb to come back out. The canvas pans and zooms,
-and re-frames itself when the depth changes.
+One screen. Movement is inward and outward, not sideways: click a badge to open
+that category, a card to go into it, a breadcrumb to come back out. The canvas
+pans and zooms, and re-frames itself when the depth changes.
 
-## Decomposition
+## Decomposition — the map alternates
 
-**More than one of a kind and they stop being cards.** Two or more events
-belonging to the same thing are drawn as a single stacked circle labelled
-**Events**, with the count on it. One event is drawn as itself, named.
+Two kinds of thing take the middle, turn about:
 
-A stack is a **way of drawing, not a thing that exists**. Its identity is just
-the card it hangs off and the kind it gathers, so nothing about grouping is
-stored: change what belongs to what and the stacks re-form by themselves. Take
-an event away from a world that had two and the stack dissolves back into a
-single named card, with nothing to clean up.
+- **A card** — the world, an event, an object. It has **no ring at all**. What
+  it holds is worn on its rim as categories: `Events 3`, `Objects 1`.
+- **A category** — `Events`, `Objects`. Its **members stand around it** in a
+  ring, drawn as themselves.
 
-Clicking a stack takes you inside it, where the cards are shown as themselves
-and never re-stacked. From there, clicking one of them takes you inside *it*,
-where its own events and objects are — the Siege of Ravenhold owning the Salt
-Ledger, and so on down.
+So the way down is: Aetheria → click `Events 3` → the three events in a ring →
+click Siege of Ravenhold → the Siege in the middle, wearing `Objects 1` →
+click that → the Salt Ledger. Cards and categories, alternating.
 
-The consequence to watch: at the top level, a large world reads as two abstract
-stacks — `Events (34)` and `Objects (12)` — and none of its actual contents. The
-world becomes a filing cabinet at exactly the point where it becomes worth
-looking at.
+A category is a **way of drawing, not a thing that exists**. Its identity is
+just the card it hangs off and the kind it gathers, so nothing about grouping is
+stored: change what belongs to what and the categories re-form by themselves.
+Move the last event away and the `Events` badge simply stops being worn — there
+is nothing to delete.
+
+The consequence to watch: at every card level, the middle is a lone circle with
+badges and nothing else on the canvas. The spider diagram now exists only
+*inside* a category. A world of any size opens the same way, which is the point,
+but the top level is no longer a picture of the world so much as a way in to it.
 
 ## Badges
 
-**A card says what is inside it without being opened.** Small coloured circles
-sit on its rim, one per kind, carrying the count — blue for events, green for
-objects. Aetheria holding three events and one object wears a blue **3** at the
-lower right and a green **1** at the lower left.
+**A card says what is inside it without being opened**, in coloured circles on
+its rim — blue for events, green for objects, always in that order, fanned
+along the bottom arc.
 
-Every card wears them: the one in the middle, the ones in the ring, and the
-loose ones. A stack wears the count of what it gathers, which is the count that
-used to sit under its name.
+They are read two ways depending on where the card is standing:
 
-The one exception: **a stack in the middle wears nothing.** You are already
-inside it and the ring around it is the count.
+- **In the middle** they are large, carry the category name and the count, and
+  are **clickable** — this is the way in. `Events` over `3`.
+- **In the ring, or adrift** they are small and carry the count alone, saying
+  what is one level further down than the ring actually draws.
 
-Two slots, at the lower left and lower right of the circle, events always first.
-A card holding nothing wears nothing, so a bare rim means a leaf.
+A card holding nothing wears nothing, so a bare rim means a leaf. **A category
+in the middle wears nothing either** — you are already inside it, and the ring
+around it is the count.
 
 ## The gesture
 
@@ -78,11 +83,10 @@ One gesture, read two ways:
 - **Drag a card onto empty canvas** → it belongs to nothing, and stays exactly
   where it fell.
 
-Dropping onto a **stack** means dropping onto the card the stack hangs off —
-drop an event on `Events` and it belongs to the world, which is where those
-events belong. Dropping an *object* on `Events` also attaches it to the world;
-it then appears in the Objects stack rather than the Events one, because the
-stack you aimed at was never a container.
+Dropping onto a **category** means dropping onto the card it hangs off — drop an
+event on `Events` and it belongs to the world, which is where those events
+belong. Dropping an *object* there also attaches it to the world; it then shows
+under Objects, because the category you aimed at was never a container.
 
 Consequences, all deliberate:
 
@@ -101,14 +105,18 @@ Consequences, all deliberate:
   centre, so the middle reads as the light source and the eye starts there.
 - **Serif for names, sans for chrome.** Names are the writer's own words and get
   a book face; labels, counts and buttons stay quiet in a UI sans.
+- **Size carries depth.** The middle card is 340px against the ring's 128 —
+  near three times the width, so what you are looking *at* is never confused
+  with what is standing around it. It is also what makes a badge big enough to
+  carry a word.
 - **Colour carries kind, not status.** Gold is the world, blue is an event,
-  green is an object. A stack takes the colour of what it gathers.
+  green is an object. A category takes the colour of what it gathers.
 - **Belonging is carried by border, not colour** — dashed and dimmed means
   loose, solid and shadowed means placed.
-- **A stack looks like any other card.** It was drawn with two dimmer circles
+- **A category looks like any other card.** It was drawn with two dimmer circles
   offset behind it, and that came off once the badges arrived: the badge already
   says how many, and the shoulders were saying it a second time. What marks a
-  stack now is its name — `Events` rather than an event — and its badge.
+  category now is its name — `Events` rather than an event.
 - **Counts live on the rim, not in the face.** A card's name is the only thing
   inside it; what it holds is worn as badges on the edge, so the count and the
   name never compete for the middle of the circle.
@@ -117,14 +125,18 @@ Consequences, all deliberate:
 
 ## Open questions
 
-- **The top level goes abstract.** A world of any size shows two stacks and
-  nothing else. Whether the first ring should stay literal for longer, or split
-  by something other than kind, is the live question.
-- **Two is a low bar.** The threshold for stacking is `GROUP_AT = 2` in
-  `grouping.ts`, one number, trivially raised.
-- **Kind is the only thing stacks are made of.** Regions, arcs, factions,
-  chapters — none of them can group anything, because grouping is hardcoded to
+- **Every card level is a lone circle.** With categories on the rim and no ring,
+  the middle card has nothing around it but its own badges and whatever is
+  adrift. The picture is now only ever drawn one layer at a time, and the world
+  screen is a way in rather than a view.
+- **A category of one still costs a click.** `Objects 1` opens onto a single
+  card. Whether one member should just be shown, and only pairs upward gather,
+  is the same threshold question that was there before, now moved.
+- **Kind is the only thing categories are made of.** Regions, arcs, factions,
+  chapters — none of them can gather anything, because the split is hardcoded to
   event-versus-object.
+- **Badges have room for about four.** They fan along the bottom arc at 52°
+  apart; characters, locations and factions would fill it.
 - **Are loose cards adrift or in a tray?** They float wherever they were
   dropped, at every depth, which will scatter as the world grows.
 - **What is a relationship between two objects?** The map only expresses

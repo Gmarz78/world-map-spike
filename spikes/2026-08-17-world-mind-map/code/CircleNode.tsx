@@ -1,5 +1,6 @@
 import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
 import { showsBadges, type Badge, type Kind } from './grouping';
+import { badgeAngles, rimPercent } from './layout';
 
 /** Where a card is standing right now, which is not a property of the card. */
 export type Role = 'centre' | 'ring' | 'loose';
@@ -14,6 +15,7 @@ export type MapNodeData = {
   editing: boolean;
   onRename: (id: string, label: string) => void;
   onEditDone: () => void;
+  onOpenBadge: (badgeId: string) => void;
   [key: string]: unknown;
 };
 
@@ -36,6 +38,10 @@ const hiddenHandle = {
 };
 
 export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
+  // In the middle, a badge is a whole category and the way into it. Elsewhere
+  // it is only a count, small, saying what is inside without being the way in.
+  const isWayIn = data.role === 'centre';
+
   const classes = [
     'circle-node',
     `kind-${data.kind}`,
@@ -46,6 +52,8 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
   ]
     .filter(Boolean)
     .join(' ');
+
+  const angles = badgeAngles(data.badges.length);
 
   return (
     <div className={classes}>
@@ -76,17 +84,31 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
         ) : (
           <span className="label">{data.label}</span>
         )}
-
       </span>
 
-      {/* What is inside, worn on the rim. */}
       {showsBadges(data.isGroup, data.role) && data.badges.length > 0 && (
-        <span className="badges">
-          {data.badges.map((badge, i) => (
-            <span key={badge.kind} className={`badge badge-${badge.kind} slot-${i}`}>
-              {badge.count}
-            </span>
-          ))}
+        <span className={isWayIn ? 'badges badges-open' : 'badges'}>
+          {data.badges.map((badge, i) => {
+            const { left, top } = rimPercent(angles[i]);
+            return (
+              <span
+                key={badge.kind}
+                className={`nodrag badge badge-${badge.kind}`}
+                style={{ left: `${left}%`, top: `${top}%` }}
+                onClick={
+                  isWayIn
+                    ? (e) => {
+                        e.stopPropagation();
+                        data.onOpenBadge(badge.id);
+                      }
+                    : undefined
+                }
+              >
+                {isWayIn && <span className="badge-label">{badge.label}</span>}
+                <span className="badge-count">{badge.count}</span>
+              </span>
+            );
+          })}
         </span>
       )}
     </div>
