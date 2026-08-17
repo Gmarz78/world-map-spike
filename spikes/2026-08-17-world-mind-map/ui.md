@@ -9,7 +9,9 @@ belongs to what by moving it there.
 **Contains:**
 - The **focused card** — a big circle at the middle of the screen, near three
   times the width of anything around it. The world to begin with; whatever you
-  last opened after that.
+  last opened after that. Under its name, a **sub-heading** saying what it is
+  and whose: `A world, and everything in it`, `Events of Aetheria`, `An object
+  of Siege of Ravenhold`.
 - **Its category badges** — large labelled circles on its rim, `Events 3`,
   `Objects 1`, one per kind it holds. These are the way in.
 - **Its ring** — only when a *category* is in the middle: its members, standing
@@ -136,6 +138,10 @@ Consequences, all deliberate:
   centre, so the middle reads as the light source and the eye starts there.
 - **Serif for names, sans for chrome.** Names are the writer's own words and get
   a book face; labels, counts and buttons stay quiet in a UI sans.
+- **The middle card says what it is; the ring does not.** Only the focused card
+  carries a sub-heading, and it drops the small uppercase kind tag that ring
+  cards wear, since the sub-heading already says `An event of Aetheria`. In the
+  ring a card is understood by the company it is standing in.
 - **Size carries depth.** The middle card is 340px against the ring's 128 —
   near three times the width, so what you are looking *at* is never confused
   with what is standing around it. It is also what makes a badge big enough to

@@ -181,6 +181,12 @@ Details that came up and were decided in passing, all cheap to change:
   evenly at 360°/n, clockwise from midnight. A pair is turned a quarter so it
   reads horizontally; every other count takes its angles straight.
 - **Clicking a badge does not select the card under it.** The click stops there.
+- **The middle card's sub-heading names its parent** — `An event of Aetheria` —
+  which the breadcrumb also says. The duplication is deliberate: the breadcrumb
+  is a path, the sub-heading is a sentence about the thing you are looking at.
+- **A category's sub-heading takes its owner's name plainly**, so it reads
+  `Objects of Siege of Ravenhold` rather than `of the Siege`. No articles are
+  inserted into the writer's own words.
 - **Dropping an object on the `Events` category** attaches it to the world and
   it appears under Objects. A category was never a container, only a view.
 - **Adding while a category is in the middle** attaches to that category's

@@ -105,6 +105,24 @@ export function labelOf(id: string, items: Items) {
   return group ? groupLabel(group.kind) : (items[id]?.label ?? id);
 }
 
+/**
+ * The line under the name on the card in the middle: what this thing is, and
+ * whose. Only the middle carries it — in the ring a card is understood by the
+ * company it is standing in.
+ */
+export function subtitleFor(id: string, items: Items, parents: Parents): string {
+  const group = parseGroup(id);
+  if (group) return `${groupLabel(group.kind)} of ${labelOf(group.owner, items)}`;
+
+  const item = items[id];
+  if (!item) return '';
+  if (item.kind === 'world') return 'A world, and everything in it';
+
+  const article = item.kind === 'event' ? 'An event' : 'An object';
+  const parent = parents[id];
+  return parent ? `${article} of ${labelOf(parent, items)}` : article;
+}
+
 export const kindOf = (id: string, items: Items): Kind =>
   parseGroup(id)?.kind ?? items[id]?.kind ?? 'object';
 

@@ -26,6 +26,7 @@ import {
   parseGroup,
   resolveTarget,
   ringEntries,
+  subtitleFor,
   type Badge,
   type Item,
   type Items,
@@ -67,6 +68,7 @@ const SEED_PARENTS: Parents = {
 /** What a card is, before the live bits (highlight, rename) are stitched on. */
 type CardSpec = {
   label: string;
+  subtitle: string;
   kind: Kind;
   role: Role;
   isGroup: boolean;
@@ -110,6 +112,7 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
       focus,
       {
         label: labelOf(focus, items),
+        subtitle: subtitleFor(focus, items, parents),
         kind: kindOf(focus, items),
         role: 'centre',
         isGroup: !!category,
@@ -132,6 +135,7 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
         entry.id,
         {
           label: entry.label,
+          subtitle: '',
           kind: entry.kind,
           role: 'ring',
           isGroup: entry.isGroup,
@@ -149,6 +153,7 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
         addSlotId(focus),
         {
           label: category.kind === 'event' ? 'New event' : 'New object',
+          subtitle: '',
           kind: category.kind,
           role: 'ring',
           isGroup: false,
@@ -169,6 +174,7 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
         item.id,
         {
           label: item.label,
+          subtitle: '',
           kind: item.kind,
           role: 'loose',
           isGroup: false,

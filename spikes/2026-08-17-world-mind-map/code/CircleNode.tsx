@@ -7,6 +7,7 @@ export type Role = 'centre' | 'ring' | 'loose';
 
 export type MapNodeData = {
   label: string;
+  subtitle: string;
   kind: Kind;
   role: Role;
   isGroup: boolean;
@@ -65,7 +66,9 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
       <span className="card-face">
         {data.isAdd && <span className="plus">+</span>}
 
-        {data.kind !== 'world' && !data.isGroup && !data.isAdd && (
+        {/* In the ring, a card wears its kind above its name. In the middle
+            that job is done by the sub-heading below it instead. */}
+        {data.kind !== 'world' && !data.isGroup && !data.isAdd && !isWayIn && (
           <span className="kind-tag">{data.kind}</span>
         )}
 
@@ -90,6 +93,8 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
         ) : (
           <span className="label">{data.label}</span>
         )}
+
+        {isWayIn && data.subtitle && <span className="subtitle">{data.subtitle}</span>}
       </span>
 
       {showsBadges(data.isGroup, data.role) && data.badges.length > 0 && (
