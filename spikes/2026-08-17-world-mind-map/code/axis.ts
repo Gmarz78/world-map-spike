@@ -90,6 +90,33 @@ export function ticksFor(from: number, to: number, count = 6) {
   return Array.from({ length: count }, (_, i) => from + step * i);
 }
 
+export type DragMode = 'move' | 'start' | 'end';
+
+/**
+ * A span after a drag of `delta` units. Whole units only — the axis is
+ * positions, not fractions of one.
+ *
+ * Moving keeps the length and refuses to go before the beginning of the story.
+ * Pulling an end never takes it past the other: an event can be shortened to a
+ * moment, but not turned inside out.
+ */
+export function applyDrag(
+  span: { start: number; end: number },
+  deltaUnits: number,
+  mode: DragMode,
+): { start: number; end: number } {
+  const delta = Math.round(deltaUnits);
+
+  if (mode === 'move') {
+    const shift = Math.max(delta, -span.start);
+    return { start: span.start + shift, end: span.end + shift };
+  }
+  if (mode === 'start') {
+    return { start: Math.min(Math.max(span.start + delta, 0), span.end), end: span.end };
+  }
+  return { start: span.start, end: Math.max(span.end + delta, span.start) };
+}
+
 /** Where a position falls across the track, as a percentage. */
 export const atPercent = (value: number, from: number, to: number) =>
   ((value - from) / (to - from)) * 100;

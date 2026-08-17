@@ -64,12 +64,30 @@ the card of the same kind, squared off — the map's blue, the map's green — s
 the two views stay one language while saying different things about the same
 event. Circles for identity, rectangles for extent.
 
+**A bar is taken hold of in three places.** Anywhere along its middle moves it,
+keeping its length; either end pulls that end alone. The ends are 14px grips
+that light up on hover, never more than a third of a short bar, so a moment
+never becomes all handle. A press that does not move opens the event on the map.
+
+Two rules, and only two: **nothing goes before the beginning of the story**, and
+**neither end can pass the other**. An event can be shortened to a moment and
+opened out again, but not turned inside out. Positions are whole units — the
+axis is places, not fractions of one — so a nudge under half a unit does nothing
+at all.
+
+**The ruler is held still while you drag.** The axis is derived from what is on
+it, so without this you would be moving the very thing you are measuring
+against, and a bar would drift away from the pointer as its own movement
+rescaled the view. It is frozen at the moment you take hold and lets go on
+release.
+
 **Lanes come from overlap and nothing else.** Two events that share any of the
 axis cannot share a row, so each takes the first row that is already clear by
 the time it begins. A lane is reused the moment it is free rather than
 abandoned, so the picture stays as short as it honestly can be. Touching counts
 as overlapping: an event ending exactly where another begins takes the next
-lane down. Nothing about lanes is stored — move an event and the rows re-form.
+lane down. Nothing about lanes is stored — drag an event across another and the
+rows re-form beneath your hand, with nothing to keep in step.
 
 **The axis is plain numbers, and the world says what they are called.** An event
 holds a start and an end; whether 34 is a page, a chapter or a day is a property
@@ -264,10 +282,14 @@ Consequences, all deliberate:
 - **What is a relationship between two objects?** The map only expresses
   belonging. "The Ember Crown was lost at the Siege" and "the Crown belongs to
   the Siege" are not the same claim, and only the second can be drawn.
-- **A span cannot be changed.** Bars are drawn from numbers nothing can edit:
-  no dragging a bar along the axis, no pulling its ends. For a spike about
-  arranging things by hand, that is the next thing to try, and the lanes
-  re-forming under a dragged bar is the thing worth seeing.
+- **A bar can be dragged past the end of the axis, and the axis follows.** The
+  range is frozen during the drag and recomputes on release, so letting go
+  outside the old extent re-fits everything at once. Whether that settling reads
+  as helpful or as a jolt is the thing to watch.
+- **Lanes re-form under your hand, and a bar can change lane mid-drag.** Its
+  row is decided by overlap, so dragging across a neighbour drops it a lane
+  while you are still holding it. That is honest but it may feel like the bar
+  jumped out from under the pointer.
 - **A new event is guessed onto the end.** Writing one in the map gives it a
   span just past everything already written, eight units long. It has to land
   somewhere, but nothing was asked and nothing is shown about it there.

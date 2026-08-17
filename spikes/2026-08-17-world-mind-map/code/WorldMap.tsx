@@ -550,6 +550,7 @@ export function WorldMap() {
       ) : (
         <Timeline
           items={items}
+          setItems={setItems}
           parents={parents}
           worldId={WORLD_ID}
           scale={scale}

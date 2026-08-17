@@ -243,6 +243,32 @@ written event is given a span just past everything already written, eight units
 long, because it has to land somewhere and nothing asks.
 **Confidence:** proven for the axis logic; assumed for how any of it looks.
 
+## 2026-08-17 — Bars that can be moved and pulled
+
+**Tried:** dragging a bar along the axis, and pulling either end to change
+where an event starts or stops.
+**Happened:** one problem was not obvious until it was written down. **The axis
+is derived from what is on it**, so dragging a bar changes the range, which
+changes the scale, which moves the bar — the ruler runs away from the thing
+being measured, and the bar drifts out from under the pointer. The fix is to
+freeze the range at the moment of taking hold and let it go on release. Worth
+remembering for any view whose extent comes from its contents.
+
+The arithmetic is all in `applyDrag`, pure and away from the pointer handling:
+whole units only, never before the beginning of the story, and neither end may
+pass the other, so an event can be shortened to a moment and opened out again
+but not turned inside out. Fourteen further assertions cover it, including a
+drag across a neighbour producing a second lane with nothing told to do so.
+
+**Pointer events throughout, with capture** — no HTML5 drag API anywhere in
+either view. Two drag mechanisms in one app would be one too many.
+**Means:** the map arranges by belonging, the timeline arranges by position, and
+both are one gesture with the hand. That is the first point in this spike where
+the timeline is a tool rather than a picture.
+**Confidence:** proven for the arithmetic; assumed for the feel — in particular
+whether a bar changing lane mid-drag reads as honest or as the bar jumping out
+from under you.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:
