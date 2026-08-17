@@ -7,6 +7,7 @@ import {
   atPercent,
   axisRange,
   formatPosition,
+  formatSpan,
   laneCount,
   spanOf,
   ticksFor,
@@ -17,6 +18,7 @@ import {
 
 const LANE_HEIGHT = 62;
 const LANE_GAP = 14;
+const PIN_STEP = 36;
 const GRIP = 14;
 
 type Drag = {
@@ -31,11 +33,13 @@ type Drag = {
 const MEANT_IT = 3;
 
 /**
- * The same world, read along its axis.
+ * The same world, read along its axis — as the whole story, or as the life of
+ * one thing in it.
  *
- * An event is a rectangle here rather than a circle, because on this view it
- * has an extent: it starts somewhere and ends somewhere. Where two of them
- * share any of the axis they cannot share a row, so the rows multiply.
+ * Following the world, an event is a rectangle: it has an extent, and where
+ * two of them share the axis the rows multiply. Following one object, its
+ * appearances are pins on the line in the object's own colour — the question
+ * there is *when*, not *how long*, and the thing's name is already overhead.
  */
 export function Timeline({
   items,
@@ -59,13 +63,13 @@ export function Timeline({
   setSubject: (id: string) => void;
   onOpen: (id: string) => void;
 }) {
-  const lanesRef = useRef<HTMLDivElement>(null);
+  const trackRef = useRef<HTMLDivElement>(null);
   const drag = useRef<Drag | null>(null);
   const [dragging, setDragging] = useState<Drag | null>(null);
 
-  // A drag ends with a DOM click on the bar it ended over, and that click
-  // arrives after the pointer has been released — so the drag has already been
-  // cleared by the time it is asked about. The answer has to outlive it.
+  // A drag ends with a DOM click on what it ended over, and that click arrives
+  // after the pointer has been released — so the drag has already been cleared
+  // by the time it is asked about. The answer has to outlive it.
   const didDrag = useRef(false);
 
   const world = items[worldId];
@@ -93,15 +97,19 @@ export function Timeline({
   const rows = laneCount(lanes);
   const unit = SCALES.find((s) => s.id === scale)?.unit ?? 'pages';
 
-  const startDrag = (event: PointerEvent<HTMLElement>, id: string) => {
-    const bar = event.currentTarget.getBoundingClientRect();
-    const track = lanesRef.current?.getBoundingClientRect();
+  const startDrag = (event: PointerEvent<HTMLElement>, id: string, forced?: DragMode) => {
+    const box = event.currentTarget.getBoundingClientRect();
+    const track = trackRef.current?.getBoundingClientRect();
     if (!track) return;
 
-    const grip = Math.min(GRIP, bar.width / 3);
-    const atLeftEdge = event.clientX - bar.left < grip;
-    const atRightEdge = bar.right - event.clientX < grip;
-    const mode: DragMode = atLeftEdge ? 'start' : atRightEdge ? 'end' : 'move';
+    const grip = Math.min(GRIP, box.width / 3);
+    const mode: DragMode =
+      forced ??
+      (event.clientX - box.left < grip
+        ? 'start'
+        : box.right - event.clientX < grip
+          ? 'end'
+          : 'move');
 
     frozen.current = { from: live.from, to: live.to };
     didDrag.current = false;
@@ -136,6 +144,17 @@ export function Timeline({
     // exactly long enough to be asked.
     setTimeout(() => (didDrag.current = false), 0);
   };
+
+  const open = (id: string) => {
+    if (!didDrag.current) onOpen(id);
+  };
+
+  const ticks = ticksFor(from, to).map((value) => (
+    <span className="axis-tick" key={value} style={{ left: `${atPercent(value, from, to)}%` }}>
+      <span className="axis-rule" />
+      <span className="axis-label">{formatPosition(value, scale)}</span>
+    </span>
+  ));
 
   return (
     <div className={dragging ? 'timeline is-dragging' : 'timeline'}>
@@ -182,82 +201,93 @@ export function Timeline({
         </div>
       </header>
 
-      <div className="timeline-body">
-        <div className="axis">
-          {ticksFor(from, to).map((value) => (
-            <span
-              className="axis-tick"
-              key={value}
-              style={{ left: `${atPercent(value, from, to)}%` }}
+      <div className="timeline-body" ref={trackRef}>
+        {following ? (
+          <>
+            {/* Pins above, the line below, the ruler under that. */}
+            <div className="pins" style={{ height: Math.max(rows, 1) * PIN_STEP + 12 }}>
+              {events.map((event) => {
+                const span = spanOf(event);
+                const lane = lanes.get(event.id) ?? 0;
+                const own = parents[event.id] === subject;
+
+                return (
+                  <button
+                    className={`pin badge-object${dragging?.id === event.id ? ' held' : ''}`}
+                    key={event.id}
+                    title={`${event.label}${own ? ' — its own history' : ' — it appears here'}`}
+                    onPointerDown={(e) => startDrag(e, event.id, 'move')}
+                    onPointerMove={moveDrag}
+                    onPointerUp={endDrag}
+                    onPointerCancel={endDrag}
+                    onClick={() => open(event.id)}
+                    style={{
+                      left: `${atPercent((span.start + span.end) / 2, from, to)}%`,
+                      bottom: lane * PIN_STEP,
+                    }}
+                  >
+                    {formatSpan(span.start, span.end, scale)}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="axis-line" />
+            <div className="axis axis-under">{ticks}</div>
+          </>
+        ) : (
+          <>
+            <div className="axis">{ticks}</div>
+
+            <div
+              className="lanes"
+              style={{ height: Math.max(rows, 1) * (LANE_HEIGHT + LANE_GAP) }}
             >
-              <span className="axis-rule" />
-              <span className="axis-label">{formatPosition(value, scale)}</span>
-            </span>
-          ))}
-        </div>
+              {events.map((event) => {
+                const span = spanOf(event);
+                const lane = lanes.get(event.id) ?? 0;
+                const during = parents[event.id] !== worldId ? parents[event.id] : null;
 
-        <div
-          className="lanes"
-          ref={lanesRef}
-          style={{ height: Math.max(rows, 1) * (LANE_HEIGHT + LANE_GAP) }}
-        >
-          {events.map((event) => {
-            const span = spanOf(event);
-            const lane = lanes.get(event.id) ?? 0;
-            const held = dragging?.id === event.id;
+                return (
+                  <div
+                    className={`bar kind-event${dragging?.id === event.id ? ' held' : ''}`}
+                    key={event.id}
+                    role="button"
+                    tabIndex={0}
+                    onPointerDown={(e) => startDrag(e, event.id)}
+                    onPointerMove={moveDrag}
+                    onPointerUp={endDrag}
+                    onPointerCancel={endDrag}
+                    onClick={() => open(event.id)}
+                    style={{
+                      left: `${atPercent(span.start, from, to)}%`,
+                      width: `${atPercent(span.end, from, to) - atPercent(span.start, from, to)}%`,
+                      top: lane * (LANE_HEIGHT + LANE_GAP),
+                      height: LANE_HEIGHT,
+                    }}
+                  >
+                    <span className="bar-face">
+                      <span className="bar-label">{event.label}</span>
+                      <span className="bar-when">
+                        {formatSpan(span.start, span.end, scale)}
+                        {during && items[during] ? ` · during ${items[during].label}` : ''}
+                      </span>
+                    </span>
 
-            // Following one object, a bar says how that object is caught up in
-            // it. Following the world, it says whose event it is.
-            const during = parents[event.id] !== worldId ? parents[event.id] : null;
-            const note = following
-              ? parents[event.id] === subject
-                ? ' · its own history'
-                : ' · it appears here'
-              : during && items[during]
-                ? ` · during ${items[during].label}`
-                : '';
-
-            return (
-              <div
-                className={held ? 'bar kind-event held' : 'bar kind-event'}
-                key={event.id}
-                role="button"
-                tabIndex={0}
-                onPointerDown={(e) => startDrag(e, event.id)}
-                onPointerMove={moveDrag}
-                onPointerUp={endDrag}
-                onPointerCancel={endDrag}
-                // Only a press that never travelled means "open this".
-                onClick={() => {
-                  if (!didDrag.current) onOpen(event.id);
-                }}
-                style={{
-                  left: `${atPercent(span.start, from, to)}%`,
-                  width: `${atPercent(span.end, from, to) - atPercent(span.start, from, to)}%`,
-                  top: lane * (LANE_HEIGHT + LANE_GAP),
-                  height: LANE_HEIGHT,
-                }}
-              >
-                <span className="bar-face">
-                  <span className="bar-label">{event.label}</span>
-                  <span className="bar-when">
-                    {formatPosition(span.start, scale)}
-                    {span.end > span.start ? ` – ${formatPosition(span.end, scale)}` : ''}
-                    {note}
-                  </span>
-                </span>
-
-                {/* Somewhere to take hold of each end. */}
-                <span className="grip grip-start" />
-                <span className="grip grip-end" />
-              </div>
-            );
-          })}
-        </div>
+                    {/* Somewhere to take hold of each end. */}
+                    <span className="grip grip-start" />
+                    <span className="grip grip-end" />
+                  </div>
+                );
+              })}
+            </div>
+          </>
+        )}
 
         <p className="timeline-hint">
-          Drag a bar to move it along the story, or take hold of either end to
-          change where it starts or stops. Click one to open it on the map.
+          {following
+            ? 'Drag a pin to move that moment along the story. Click one to open it on the map.'
+            : 'Drag a bar to move it along the story, or take hold of either end to change where it starts or stops. Click one to open it on the map.'}
         </p>
       </div>
     </div>

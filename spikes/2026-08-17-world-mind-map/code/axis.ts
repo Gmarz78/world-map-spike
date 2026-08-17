@@ -84,6 +84,33 @@ export function formatPosition(value: number, scale: Scale): string {
   });
 }
 
+/**
+ * A span said as briefly as it can be — the unit once rather than twice, and
+ * a date range collapsed when it stays inside one month.
+ */
+export function formatSpan(start: number, end: number, scale: Scale): string {
+  if (Math.round(end) <= Math.round(start)) return formatPosition(start, scale);
+
+  if (scale === 'pages') return `p. ${Math.round(start)}–${Math.round(end)}`;
+  if (scale === 'chapters') return `ch. ${Math.round(start)}–${Math.round(end)}`;
+
+  const from = new Date(EPOCH + Math.round(start) * DAY);
+  const to = new Date(EPOCH + Math.round(end) * DAY);
+  if (
+    from.getUTCMonth() === to.getUTCMonth() &&
+    from.getUTCFullYear() === to.getUTCFullYear()
+  ) {
+    const tail = to.toLocaleDateString('en-GB', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+      timeZone: 'UTC',
+    });
+    return `${from.getUTCDate()}–${tail}`;
+  }
+  return `${formatPosition(start, scale)} – ${formatPosition(end, scale)}`;
+}
+
 /** Evenly spaced places to label along the axis. */
 export function ticksFor(from: number, to: number, count = 6) {
   const step = (to - from) / (count - 1);

@@ -77,6 +77,21 @@ pick one and the timeline shows only where it touches the story.** The header
 becomes that object's name, and the count becomes `Where it touches the story —
 2 times`.
 
+**The drawing changes with the question.** Following the world, an event is a
+blue rectangle: it has an extent, and how long it runs is the point. Following
+an object, its appearances are **green pins** on the line — the object's own
+colour, the same green it wears on the map — sitting just above the axis with a
+chevron pointing down at it. A pin carries only where it falls: `p. 62–66`,
+`3–7 Mar 1200`. Nothing else, because the name is already overhead in big
+letters and *when* is the only question left.
+
+The unit is said once rather than twice, and a date range inside one month
+collapses to `3–7 Mar 1200`.
+
+A pin can be dragged along the line to move that moment, but it has no ends to
+pull: a pin is a place, and pulling at a place would be asking the wrong
+question. Extent is edited where extent is drawn.
+
 An object touches the story two ways, and both are already in the tree the map
 builds. No second kind of relationship was needed to ask the question:
 
@@ -278,8 +293,10 @@ Consequences, all deliberate:
   near three times the width, so what you are looking *at* is never confused
   with what is standing around it. It is also what makes a badge big enough to
   carry a word.
-- **Colour carries kind, not status.** Gold is the world, blue is an event,
-  green is an object. A category takes the colour of what it gathers.
+- **Colour carries kind, everywhere.** Gold is the world, blue is an event,
+  green is an object — on a circle, on a rectangle, on a pin, in both views. A
+  category takes the colour of what it gathers. Nothing is drawn in a colour
+  that belongs to something else.
 - **There is no unplaced state to draw.** The dashed, dimmed treatment for a
   card belonging to nothing is still in the stylesheet but nothing produces one
   any more.

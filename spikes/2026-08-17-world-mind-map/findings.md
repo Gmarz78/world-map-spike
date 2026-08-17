@@ -302,6 +302,20 @@ decision about the model, not the view, and it has not been taken.
 directions at once and belonging-to-the-world not counting); assumed for the
 picker.
 
+**Followed by — the drawing changes with the question.** Following an object was
+at first drawn with the same blue event bars, which said the wrong thing twice
+over: the colour belonged to events when the subject was an object, and the
+bars carried names when the name was already overhead in big letters. Its
+appearances are now **green pins** — the object's own colour, matching its
+circle on the map — sitting above the line with a chevron pointing at it, and
+carrying only where they fall. A pin can be dragged along the line but has no
+ends to pull: a pin is a place, and extent is edited where extent is drawn.
+
+One thing lost, worth knowing: the label a pin dropped was the *event's* name,
+not the object's — "The Forging" rather than "The Ember Crown" — so which
+appearance is which now lives only in the hover title. Whether that matters
+shows up the moment an object has five of them.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:
