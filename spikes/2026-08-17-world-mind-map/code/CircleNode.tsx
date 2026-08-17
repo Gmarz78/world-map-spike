@@ -49,14 +49,6 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
 
   return (
     <div className={classes}>
-      {/* A group is a stack of cards, said once — the shoulders behind it. */}
-      {data.isGroup && (
-        <>
-          <span className="stack stack-2" />
-          <span className="stack stack-1" />
-        </>
-      )}
-
       <Handle type="target" position={Position.Top} style={hiddenHandle} isConnectable={false} />
       <Handle type="source" position={Position.Bottom} style={hiddenHandle} isConnectable={false} />
 

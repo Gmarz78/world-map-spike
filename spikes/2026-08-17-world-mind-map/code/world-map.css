@@ -199,29 +199,10 @@
   box-shadow: inset 0 0 0 1px rgba(232, 226, 214, 0.4);
 }
 
-/* --- groups: more than one of a kind, stacked --------------------------- */
+/* --- groups: more than one of a kind ------------------------------------ */
 
-.is-group .stack {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 2px solid currentColor;
-  background: #131826;
-  z-index: 1;
-}
-.is-group.kind-event .stack {
-  color: rgba(111, 155, 240, 0.55);
-}
-.is-group.kind-object .stack {
-  color: rgba(69, 196, 165, 0.55);
-}
-.is-group .stack-1 {
-  transform: translate(6px, 7px) scale(0.985);
-}
-.is-group .stack-2 {
-  transform: translate(12px, 14px) scale(0.965);
-  opacity: 0.55;
-}
+/* No stacked shoulders behind these any more — the badge on the rim says how
+   many, so drawing it twice was saying it twice. */
 .is-group .label {
   font-size: 15px;
   letter-spacing: 0.03em;
@@ -230,7 +211,7 @@
   font-size: 21px;
 }
 .is-group:hover {
-  transform: translate(-2px, -3px);
+  transform: scale(1.03);
 }
 
 /* --- breadcrumb --------------------------------------------------------- */

@@ -114,6 +114,13 @@ wears nothing, because the ring around it is already the count.
 **Confidence:** proven for the counts (10 further assertions, including badges
 re-forming when a relationship changes), assumed for the look.
 
+**Followed by:** the stacked shoulders behind a group card came off. Once a
+badge says how many, drawing offset circles behind the card says it a second
+time. A stack is now marked by its name and its badge alone, and looks like
+every other card — which is a claim about what a stack *is*, and worth
+watching: nothing but the plural label distinguishes a place you can go into
+from a thing that is already there.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:

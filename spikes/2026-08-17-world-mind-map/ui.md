@@ -105,8 +105,10 @@ Consequences, all deliberate:
   green is an object. A stack takes the colour of what it gathers.
 - **Belonging is carried by border, not colour** — dashed and dimmed means
   loose, solid and shadowed means placed.
-- **A stack is drawn as a stack** — two dimmer circles offset behind the front
-  one, lifting slightly on hover.
+- **A stack looks like any other card.** It was drawn with two dimmer circles
+  offset behind it, and that came off once the badges arrived: the badge already
+  says how many, and the shoulders were saying it a second time. What marks a
+  stack now is its name — `Events` rather than an event — and its badge.
 - **Counts live on the rim, not in the face.** A card's name is the only thing
   inside it; what it holds is worn as badges on the edge, so the count and the
   name never compete for the middle of the circle.
