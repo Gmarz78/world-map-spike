@@ -47,8 +47,7 @@ and how long it runs.
 - The **scale switch** — `Pages`, `Chapters`, `Dates`.
 - The **axis**, six labelled marks across the story's extent.
 - **One bar per event**, positioned and sized by where it starts and ends,
-  carrying its name and its span — `p. 34 – p. 68` — and its object badges
-  riding the far end.
+  carrying its name and its span — `p. 34 – p. 68` — and nothing else.
 - **Lanes**, as many as the overlaps demand.
 
 **Reached from:** the view switch.
@@ -63,6 +62,12 @@ extent: it starts somewhere and ends somewhere. It keeps the fill and border of
 the card of the same kind, squared off — the map's blue, the map's green — so
 the two views stay one language while saying different things about the same
 event. Circles for identity, rectangles for extent.
+
+**A bar carries no badges.** What an event holds is the map's question; here the
+only questions are when it starts and when it stops. Badges would answer neither,
+and with three or four kinds of relationship to show they would crowd the one
+thing a bar is for. The answer is a click away, in the view that is about
+belonging.
 
 **A bar is taken hold of in three places.** Anywhere along its middle moves it,
 keeping its length; either end pulls that end alone. The ends are 14px grips
@@ -297,9 +302,14 @@ Consequences, all deliberate:
 - **A new event is guessed onto the end.** Writing one in the map gives it a
   span just past everything already written, eight units long. It has to land
   somewhere, but nothing was asked and nothing is shown about it there.
-- **Objects are not on the axis at all.** They reach the story only by belonging
-  to an event, which is why they appear as badges on a bar and never as bars.
-  Whether an object should have a life of its own along the axis is open.
+- **Objects are not on the timeline at all** — not as bars, and no longer as
+  badges either. They reach the story only by belonging to an event, and this
+  view says nothing about them. Whether an object should have a life of its own
+  along the axis is open.
+- **Each view now answers one question.** The map is about belonging, the
+  timeline about position. That is clean, but it does mean neither view ever
+  shows both at once, and a writer asking "what was the Crown present at?"
+  has to hold two pictures in their head.
 - **The scales are not really interchangeable.** The same number is a page, a
   chapter and a day, so a story 96 units long is 96 pages, 96 chapters or three
   months depending on a switch. Real chapters would want a coarser axis than

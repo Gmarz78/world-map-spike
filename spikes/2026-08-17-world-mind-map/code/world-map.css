@@ -557,20 +557,8 @@
   opacity: 0.5;
 }
 
-/* Badges ride the far end of the bar rather than its rim. */
-.bar-badges {
-  position: absolute;
-  right: -11px;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  gap: 5px;
-  z-index: 3;
-}
-.bar-badges .badge {
-  position: static;
-  transform: none;
-}
+/* No badges on a bar. What an event holds is the map's question; here the
+   only questions are when it starts and when it stops. */
 
 .timeline-hint {
   margin: 26px 0 0;

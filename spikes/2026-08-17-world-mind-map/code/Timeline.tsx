@@ -1,5 +1,5 @@
 import { useRef, useState, type Dispatch, type PointerEvent, type SetStateAction } from 'react';
-import { badgesFor, type Items, type Parents } from './grouping';
+import type { Items, Parents } from './grouping';
 import {
   SCALES,
   applyDrag,
@@ -169,7 +169,6 @@ export function Timeline({
           {events.map((event) => {
             const span = spanOf(event);
             const lane = lanes.get(event.id) ?? 0;
-            const badges = badgesFor(event.id, items, parents);
             const during = parents[event.id] !== worldId ? parents[event.id] : null;
             const held = dragging?.id === event.id;
 
@@ -206,16 +205,6 @@ export function Timeline({
                 {/* Somewhere to take hold of each end. */}
                 <span className="grip grip-start" />
                 <span className="grip grip-end" />
-
-                {badges.length > 0 && (
-                  <span className="bar-badges">
-                    {badges.map((badge) => (
-                      <span key={badge.kind} className={`badge badge-${badge.kind}`}>
-                        <span className="badge-count">{badge.count}</span>
-                      </span>
-                    ))}
-                  </span>
-                )}
               </div>
             );
           })}
