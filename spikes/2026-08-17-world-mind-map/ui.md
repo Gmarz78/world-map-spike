@@ -79,14 +79,21 @@ becomes that object's name, and the count becomes `Where it touches the story �
 
 **The drawing changes with the question.** Following the world, an event is a
 blue rectangle: it has an extent, and how long it runs is the point. Following
-an object, its appearances are **green pins** on the line — the object's own
-colour, the same green it wears on the map — sitting just above the axis with a
-chevron pointing down at it. A pin carries only where it falls: `p. 62–66`,
-`3–7 Mar 1200`. Nothing else, because the name is already overhead in big
-letters and *when* is the only question left.
+an object, its appearances are **circles — the map's own cards** in the object's
+green, hung off the line by a thin stalk that starts a few pixels clear of the
+circle and touches the line with a small dot. A pin carries only where it falls:
+`p. 62–66`, `3–7 Mar 1200`. Nothing else, because the name is already overhead
+in big letters and *when* is the only question left.
 
 The unit is said once rather than twice, and a date range inside one month
 collapses to `3–7 Mar 1200`.
+
+**Crowding spreads either way.** A pin is a fixed size on the screen however
+short the moment it marks, so what collides is the drawing, not the span: each
+is treated as taking up a tenth of the visible axis around its middle, and the
+same lane packing does the rest. The first lane hangs above the line, the second
+below it with its stalk reaching up, the third higher above, and so on — so a
+heap opens outwards from the line instead of climbing in one direction.
 
 A pin can be dragged along the line to move that moment, but it has no ends to
 pull: a pin is a place, and pulling at a place would be asking the wrong
@@ -307,8 +314,10 @@ Consequences, all deliberate:
 - **Counts live on the rim, not in the face.** A card's name is the only thing
   inside it; what it holds is worn as badges on the edge, so the count and the
   name never compete for the middle of the circle.
-- **Circles throughout.** A spider diagram wants one shape; the kind tag above
-  the name does the distinguishing.
+- **Circles throughout, and one exception.** A card is a circle everywhere — on
+  the map, and hung off the timeline as an appearance. The only rectangle in the
+  whole thing is a timeline bar, which earns it: it is the one drawing that has
+  to say how long something lasted.
 
 ## Open questions
 

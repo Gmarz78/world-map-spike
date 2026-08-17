@@ -64,6 +64,31 @@ export function assignLanes(spans: Span[]): Map<string, number> {
   return lanes;
 }
 
+/**
+ * Lanes for pins rather than bars. A pin is a fixed size on the screen however
+ * short the moment it marks, so what collides is the drawing, not the span:
+ * each one is treated as taking up a little of the axis around its middle, and
+ * the same packing does the rest.
+ */
+export function pinLanes(spans: Span[], from: number, to: number, share = 0.1) {
+  const room = (to - from) * share;
+  const padded = spans.map((span) => {
+    const middle = (span.start + span.end) / 2;
+    return { id: span.id, start: middle - room / 2, end: middle + room / 2 };
+  });
+  return assignLanes(padded);
+}
+
+/**
+ * Which side of the line a pin hangs from, and how far out. The first lane sits
+ * above, the second below, the third higher above, and so on — so crowding
+ * spreads either way rather than climbing in one direction.
+ */
+export const pinPlace = (lane: number) => ({
+  side: lane % 2 === 0 ? ('above' as const) : ('below' as const),
+  tier: Math.floor(lane / 2),
+});
+
 export const laneCount = (lanes: Map<string, number>) =>
   lanes.size === 0 ? 0 : Math.max(...lanes.values()) + 1;
 

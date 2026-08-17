@@ -613,62 +613,86 @@
 
 /* --- pins: one thing's appearances --------------------------------------- */
 
-/* Following an object, its appearances are pins in the object's own colour —
-   green here, green on the map — carrying only where they fall. The name is
-   already overhead in big letters. */
-.pins {
+/* Following an object, its appearances are the map's own circular cards in the
+   object's green, hung off the line by a stalk with a dot where it touches.
+   Crowding sends them alternately above and below. */
+.pin-field {
   position: relative;
 }
 
-.pin {
+.pin-anchor {
   position: absolute;
   transform: translateX(-50%);
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1.5px solid;
-  font-family: inherit;
-  font-size: 11.5px;
-  letter-spacing: 0.03em;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.pin-anchor.above {
+  bottom: 0;
+}
+.pin-anchor.below {
+  top: 0;
+  flex-direction: column-reverse;
+}
+
+/* The map's card, smaller, carrying only where the moment falls. */
+.pin-card {
+  width: 88px;
+  height: 88px;
+  flex: none;
+  padding: 0;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
   touch-action: none;
   user-select: none;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
-  transition:
-    transform 140ms ease,
-    box-shadow 140ms ease;
+  cursor: grab;
 }
-.pin:hover {
-  transform: translateX(-50%) translateY(-2px);
-  z-index: 2;
+.pin-card .label {
+  font-size: 11px;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
-
-/* The chevron: a corner of the pin itself, poking down at the line. */
-.pin::after {
-  content: '';
-  position: absolute;
-  left: 50%;
-  bottom: -5px;
-  width: 9px;
-  height: 9px;
-  transform: translateX(-50%) rotate(45deg);
-  background: inherit;
-  border-right: 1.5px solid;
-  border-bottom: 1.5px solid;
-  border-color: inherit;
+.pin-card:hover {
+  transform: translateY(-3px);
 }
-
-.is-dragging .pin {
+.is-dragging .pin-card {
   transition: none;
 }
-.pin.held {
+.pin-card.held {
   cursor: grabbing;
-  transform: translateX(-50%);
-  z-index: 4;
-  box-shadow:
-    0 0 0 3px rgba(243, 212, 146, 0.28),
-    0 10px 22px rgba(0, 0, 0, 0.5);
+  transform: none;
+}
+.pin-card.held .card-face {
+  box-shadow: 0 0 0 3px rgba(243, 212, 146, 0.3);
+}
+
+/* A few pixels clear of the circle, reaching to the line. */
+.pin-stalk {
+  flex: 1;
+  width: 1.5px;
+  min-height: 12px;
+  background: linear-gradient(rgba(69, 196, 165, 0.15), rgba(69, 196, 165, 0.65));
+  margin-top: 7px;
+}
+.pin-anchor.below .pin-stalk {
+  margin: 0 0 7px;
+  background: linear-gradient(rgba(69, 196, 165, 0.65), rgba(69, 196, 165, 0.15));
+}
+
+.pin-dot {
+  flex: none;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #45c4a5;
+  box-shadow: 0 0 8px rgba(69, 196, 165, 0.6);
+  margin-bottom: -3.5px;
+}
+.pin-anchor.below .pin-dot {
+  margin: -3.5px 0 0;
 }
 
 .timeline-hint {

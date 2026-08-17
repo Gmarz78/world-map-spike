@@ -9,6 +9,8 @@ import {
   formatPosition,
   formatSpan,
   laneCount,
+  pinLanes,
+  pinPlace,
   spanOf,
   ticksFor,
   type DragMode,
@@ -18,8 +20,14 @@ import {
 
 const LANE_HEIGHT = 62;
 const LANE_GAP = 14;
-const PIN_STEP = 36;
 const GRIP = 14;
+
+// A pin: a circle, a gap, a stalk, and a dot sitting on the line.
+const PIN_CIRCLE = 88;
+const PIN_STALK = 26;
+const PIN_GAP = 7;
+const PIN_RISE = 52;
+const pinHeight = (tier: number) => PIN_CIRCLE + PIN_GAP + PIN_STALK + tier * PIN_RISE;
 
 type Drag = {
   id: string;
@@ -95,6 +103,8 @@ export function Timeline({
 
   const lanes = assignLanes(spans);
   const rows = laneCount(lanes);
+  // Pins collide by their own size on the screen, not by their spans.
+  const pins = pinLanes(spans, from, to);
   const unit = SCALES.find((s) => s.id === scale)?.unit ?? 'pages';
 
   const startDrag = (event: PointerEvent<HTMLElement>, id: string, forced?: DragMode) => {
@@ -203,38 +213,68 @@ export function Timeline({
 
       <div className="timeline-body" ref={trackRef}>
         {following ? (
-          <>
-            {/* Pins above, the line below, the ruler under that. */}
-            <div className="pins" style={{ height: Math.max(rows, 1) * PIN_STEP + 12 }}>
-              {events.map((event) => {
-                const span = spanOf(event);
-                const lane = lanes.get(event.id) ?? 0;
-                const own = parents[event.id] === subject;
+          (() => {
+            const placed = events.map((event) => {
+              const span = spanOf(event);
+              const lane = pins.get(event.id) ?? 0;
+              return { event, span, ...pinPlace(lane) };
+            });
 
-                return (
-                  <button
-                    className={`pin badge-object${dragging?.id === event.id ? ' held' : ''}`}
-                    key={event.id}
-                    title={`${event.label}${own ? ' — its own history' : ' — it appears here'}`}
-                    onPointerDown={(e) => startDrag(e, event.id, 'move')}
-                    onPointerMove={moveDrag}
-                    onPointerUp={endDrag}
-                    onPointerCancel={endDrag}
-                    onClick={() => open(event.id)}
-                    style={{
-                      left: `${atPercent((span.start + span.end) / 2, from, to)}%`,
-                      bottom: lane * PIN_STEP,
-                    }}
-                  >
-                    {formatSpan(span.start, span.end, scale)}
-                  </button>
-                );
-              })}
-            </div>
+            const tallest = (side: 'above' | 'below') => {
+              const tiers = placed.filter((p) => p.side === side).map((p) => p.tier);
+              return tiers.length ? pinHeight(Math.max(...tiers)) : 0;
+            };
 
-            <div className="axis-line" />
-            <div className="axis axis-under">{ticks}</div>
-          </>
+            const pin = (p: (typeof placed)[number]) => (
+              <div
+                className={`pin-anchor ${p.side}`}
+                key={p.event.id}
+                style={{
+                  left: `${atPercent((p.span.start + p.span.end) / 2, from, to)}%`,
+                  height: pinHeight(p.tier),
+                }}
+              >
+                <button
+                  className={`circle-node kind-object role-ring pin-card${
+                    dragging?.id === p.event.id ? ' held' : ''
+                  }`}
+                  title={`${p.event.label}${
+                    parents[p.event.id] === subject ? ' — its own history' : ' — it appears here'
+                  }`}
+                  onPointerDown={(e) => startDrag(e, p.event.id, 'move')}
+                  onPointerMove={moveDrag}
+                  onPointerUp={endDrag}
+                  onPointerCancel={endDrag}
+                  onClick={() => open(p.event.id)}
+                >
+                  <span className="card-face">
+                    <span className="label">{formatSpan(p.span.start, p.span.end, scale)}</span>
+                  </span>
+                </button>
+
+                {/* Kept a few pixels clear of the circle, reaching down to the
+                    line and touching it with a dot. */}
+                <span className="pin-stalk" />
+                <span className="pin-dot" />
+              </div>
+            );
+
+            return (
+              <>
+                <div className="pin-field" style={{ height: tallest('above') }}>
+                  {placed.filter((p) => p.side === 'above').map(pin)}
+                </div>
+
+                <div className="axis-line" />
+
+                <div className="pin-field" style={{ height: tallest('below') }}>
+                  {placed.filter((p) => p.side === 'below').map(pin)}
+                </div>
+
+                <div className="axis axis-under">{ticks}</div>
+              </>
+            );
+          })()
         ) : (
           <>
             <div className="axis">{ticks}</div>

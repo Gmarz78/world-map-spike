@@ -316,6 +316,20 @@ not the object's — "The Forging" rather than "The Ember Crown" — so which
 appearance is which now lives only in the hover title. Whether that matters
 shows up the moment an object has five of them.
 
+**Then the pins became circles**, which is what closed the last of the visual
+gap between the views: a card is a circle everywhere, and the only rectangle in
+the whole thing is a timeline bar, which earns it by being the one drawing that
+has to say how long something lasted. The pin is literally the map's card
+markup at 88px, so nothing about its look is stated twice.
+
+Hanging them off the line took a second kind of lane. **A pin is a fixed size on
+the screen however short the moment it marks**, so what collides is the drawing
+and not the span — two moments a page apart never overlap but their circles
+certainly do. Each pin is treated as taking up a tenth of the visible axis
+around its middle and the existing packing does the rest, which means the same
+eight lines of code sort both bars and pins. Lanes then alternate above and
+below the line, so a heap opens outwards rather than climbing.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:
