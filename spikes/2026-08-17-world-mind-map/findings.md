@@ -99,6 +99,21 @@ between them is the one thing most likely to feel wrong in use.
 **Confidence:** assumed — the flag is written and builds, but has not been
 driven (no frames; see above).
 
+## 2026-08-17 — Counts moved to the rim
+
+**Tried:** replacing the count printed under a stack's name with small
+kind-coloured badges worn on the rim of every card.
+**Happened:** the meaning generalised on the way. A count under a name could
+only ever describe a stack; a badge on a rim describes any card — Aetheria wears
+a blue 3 and a green 1, the Siege of Ravenhold wears a green 1 for the Ledger it
+holds, the Ledger wears nothing. So a bare rim now means a leaf, and you can see
+one level further down than the ring actually draws.
+**Means:** the card face is only ever the name, and what a thing holds is read
+from its edge. The exception kept from the previous round: a stack in the middle
+wears nothing, because the ring around it is already the count.
+**Confidence:** proven for the counts (10 further assertions, including badges
+re-forming when a relationship changes), assumed for the look.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:

@@ -63,10 +63,57 @@
   opacity: 0.55;
 }
 
-.circle-node .count {
-  font-size: 11px;
-  letter-spacing: 0.08em;
-  opacity: 0.62;
+/* --- badges: what a card holds, worn on its rim ------------------------- */
+
+.badges {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.badge {
+  position: absolute;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  border: 1.5px solid;
+  transform: translate(-50%, -50%);
+  box-shadow:
+    0 0 0 3px rgba(13, 16, 23, 0.92),
+    0 4px 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Slots sit on the circle itself, at the two lower corners. */
+.badge.slot-0 {
+  left: 85.35%;
+  top: 85.35%;
+}
+.badge.slot-1 {
+  left: 14.65%;
+  top: 85.35%;
+}
+
+.badge-event {
+  background: #1c2b46;
+  border-color: #6f9bf0;
+  color: #d5e3ff;
+}
+.badge-object {
+  background: #11332b;
+  border-color: #45c4a5;
+  color: #cdf1e6;
+}
+
+.role-centre .badge {
+  width: 34px;
+  height: 34px;
+  font-size: 13.5px;
 }
 
 .circle-node .label-input {

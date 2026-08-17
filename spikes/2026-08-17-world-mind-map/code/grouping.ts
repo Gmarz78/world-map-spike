@@ -31,11 +31,35 @@ export function parseGroup(id: string): { owner: string; kind: Kind } | null {
 
 export const groupLabel = (kind: Kind) => (kind === 'event' ? 'Events' : 'Objects');
 
+export type Badge = { kind: Kind; count: number };
+
 /**
- * A stack in the ring says how many it holds. The same stack in the middle
- * does not — you are already inside it, and the ring around it is the count.
+ * What a card holds, by kind — worn on its rim as a small coloured circle, so
+ * a card says what is inside it without being opened.
  */
-export const showsCount = (isGroup: boolean, role: string) => isGroup && role !== 'centre';
+export function badgesFor(id: string, items: Items, parents: Parents): Badge[] {
+  const group = parseGroup(id);
+  if (group) {
+    const count = childrenOf(group.owner, parents).filter(
+      (c) => items[c]?.kind === group.kind,
+    ).length;
+    return count ? [{ kind: group.kind, count }] : [];
+  }
+
+  const kids = childrenOf(id, parents);
+  const badges: Badge[] = [];
+  for (const kind of ['event', 'object'] as Kind[]) {
+    const count = kids.filter((c) => items[c]?.kind === kind).length;
+    if (count) badges.push({ kind, count });
+  }
+  return badges;
+}
+
+/**
+ * A stack in the middle wears no badge: you are already inside it, and the ring
+ * around it is the count.
+ */
+export const showsBadges = (isGroup: boolean, role: string) => !(isGroup && role === 'centre');
 
 /** Dropping onto a group means dropping onto the card the group hangs off. */
 export const resolveTarget = (id: string) => parseGroup(id)?.owner ?? id;

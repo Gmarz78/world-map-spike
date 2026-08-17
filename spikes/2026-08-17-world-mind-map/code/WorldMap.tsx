@@ -16,12 +16,14 @@ import '@xyflow/react/dist/style.css';
 
 import { CircleNode, type MapNode, type MapNodeData, type Role } from './CircleNode';
 import {
+  badgesFor,
   descendantsOf,
   kindOf,
   labelOf,
   parseGroup,
   resolveTarget,
   ringEntries,
+  type Badge,
   type Item,
   type Items,
   type Kind,
@@ -65,7 +67,7 @@ const SEED_PARENTS: Parents = {
 };
 
 /** What a card is, before the live bits (highlight, rename) are stitched on. */
-type CardSpec = { label: string; kind: Kind; role: Role; isGroup: boolean; count: number };
+type CardSpec = { label: string; kind: Kind; role: Role; isGroup: boolean; badges: Badge[] };
 
 export const sizeOf = (data: { role: string; isGroup: boolean }) =>
   data.role === 'centre' ? CENTRE_SIZE : data.isGroup ? GROUP_SIZE : ITEM_SIZE;
@@ -93,6 +95,8 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
     };
   };
 
+  const badges = (id: string) => badgesFor(id, items, parents);
+
   const nodes: MapNode[] = [
     make(
       focus,
@@ -101,7 +105,7 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
         kind: kindOf(focus, items),
         role: 'centre',
         isGroup: !!parseGroup(focus),
-        count: 0,
+        badges: badges(focus),
       },
       { x: 0, y: 0 },
     ),
@@ -118,7 +122,7 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
           kind: entry.kind,
           role: 'ring',
           isGroup: entry.isGroup,
-          count: entry.count,
+          badges: badges(entry.id),
         },
         positions[i],
       ),
@@ -132,7 +136,13 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
     nodes.push(
       make(
         item.id,
-        { label: item.label, kind: item.kind, role: 'loose', isGroup: false, count: 1 },
+        {
+          label: item.label,
+          kind: item.kind,
+          role: 'loose',
+          isGroup: false,
+          badges: badges(item.id),
+        },
         toCentre({ x: item.x, y: item.y }, ITEM_SIZE),
       ),
     );

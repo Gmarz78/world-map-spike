@@ -1,5 +1,5 @@
 import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
-import { showsCount, type Kind } from './grouping';
+import { showsBadges, type Badge, type Kind } from './grouping';
 
 /** Where a card is standing right now, which is not a property of the card. */
 export type Role = 'centre' | 'ring' | 'loose';
@@ -9,7 +9,7 @@ export type MapNodeData = {
   kind: Kind;
   role: Role;
   isGroup: boolean;
-  count: number;
+  badges: Badge[];
   dropTarget: boolean;
   editing: boolean;
   onRename: (id: string, label: string) => void;
@@ -85,8 +85,18 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
           <span className="label">{data.label}</span>
         )}
 
-        {showsCount(data.isGroup, data.role) && <span className="count">{data.count}</span>}
       </span>
+
+      {/* What is inside, worn on the rim. */}
+      {showsBadges(data.isGroup, data.role) && data.badges.length > 0 && (
+        <span className="badges">
+          {data.badges.map((badge, i) => (
+            <span key={badge.kind} className={`badge badge-${badge.kind} slot-${i}`}>
+              {badge.count}
+            </span>
+          ))}
+        </span>
+      )}
     </div>
   );
 }

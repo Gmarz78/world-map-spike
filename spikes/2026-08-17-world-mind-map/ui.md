@@ -41,9 +41,6 @@ stored: change what belongs to what and the stacks re-form by themselves. Take
 an event away from a world that had two and the stack dissolves back into a
 single named card, with nothing to clean up.
 
-A stack in the ring carries its count. **The same stack in the middle does
-not** — you are already inside it, and the ring around it is the count.
-
 Clicking a stack takes you inside it, where the cards are shown as themselves
 and never re-stacked. From there, clicking one of them takes you inside *it*,
 where its own events and objects are — the Siege of Ravenhold owning the Salt
@@ -53,6 +50,23 @@ The consequence to watch: at the top level, a large world reads as two abstract
 stacks — `Events (34)` and `Objects (12)` — and none of its actual contents. The
 world becomes a filing cabinet at exactly the point where it becomes worth
 looking at.
+
+## Badges
+
+**A card says what is inside it without being opened.** Small coloured circles
+sit on its rim, one per kind, carrying the count — blue for events, green for
+objects. Aetheria holding three events and one object wears a blue **3** at the
+lower right and a green **1** at the lower left.
+
+Every card wears them: the one in the middle, the ones in the ring, and the
+loose ones. A stack wears the count of what it gathers, which is the count that
+used to sit under its name.
+
+The one exception: **a stack in the middle wears nothing.** You are already
+inside it and the ring around it is the count.
+
+Two slots, at the lower left and lower right of the circle, events always first.
+A card holding nothing wears nothing, so a bare rim means a leaf.
 
 ## The gesture
 
@@ -93,6 +107,9 @@ Consequences, all deliberate:
   loose, solid and shadowed means placed.
 - **A stack is drawn as a stack** — two dimmer circles offset behind the front
   one, lifting slightly on hover.
+- **Counts live on the rim, not in the face.** A card's name is the only thing
+  inside it; what it holds is worn as badges on the edge, so the count and the
+  name never compete for the middle of the circle.
 - **Circles throughout.** A spider diagram wants one shape; the kind tag above
   the name does the distinguishing.
 
