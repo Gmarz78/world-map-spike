@@ -18,6 +18,7 @@ import { CircleNode, type MapNode, type MapNodeData, type Role } from './CircleN
 import {
   badgesFor,
   descendantsOf,
+  groupId,
   kindOf,
   labelOf,
   parseGroup,
@@ -44,18 +45,20 @@ const SEED_ITEMS: Item[] = [
   { id: 'e-sundering', label: 'The Sundering', kind: 'event', x: 0, y: 0 },
   { id: 'e-coronation', label: 'Coronation of Vela', kind: 'event', x: 0, y: 0 },
   { id: 'e-siege', label: 'Siege of Ravenhold', kind: 'event', x: 0, y: 0 },
+  { id: 'e-winter', label: 'The Long Winter', kind: 'event', x: 0, y: 0 },
   { id: 'o-crown', label: 'The Ember Crown', kind: 'object', x: 0, y: 0 },
+  { id: 'o-ring', label: "Vela's Ring", kind: 'object', x: 0, y: 0 },
   { id: 'o-ledger', label: 'The Salt Ledger', kind: 'object', x: 0, y: 0 },
-
-  { id: 'e-winter', label: 'The Long Winter', kind: 'event', x: -660, y: -80 },
-  { id: 'o-ring', label: "Vela's Ring", kind: 'object', x: 660, y: -20 },
 ];
 
+// Everything in a world belongs somewhere in it. Nothing floats.
 const SEED_PARENTS: Parents = {
   'e-sundering': WORLD_ID,
   'e-coronation': WORLD_ID,
   'e-siege': WORLD_ID,
+  'e-winter': WORLD_ID,
   'o-crown': WORLD_ID,
+  'o-ring': WORLD_ID,
   'o-ledger': 'e-siege', // the Ledger was taken at Ravenhold
 };
 
@@ -151,7 +154,7 @@ let nextId = 1;
 // ---------------------------------------------------------------------------
 
 function WorldMapCanvas() {
-  const { screenToFlowPosition, fitView } = useReactFlow();
+  const { fitView } = useReactFlow();
 
   const [items, setItems] = useState<Items>(() =>
     Object.fromEntries(SEED_ITEMS.map((i) => [i.id, i])),
@@ -160,7 +163,6 @@ function WorldMapCanvas() {
   const [trail, setTrail] = useState<string[]>([WORLD_ID]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
-  const addCount = useRef(0);
 
   const focus = trail[trail.length - 1];
 
@@ -247,15 +249,10 @@ function WorldMapCanvas() {
       setTimeout(() => (didDrag.current = false), 0);
       const target = hitTest(node, nodes);
       // Dropped on a card: it belongs to that card now.
-      // Dropped on empty canvas: it belongs to nothing, and stays where it fell.
-      const parent = target ? resolveTarget(target) : null;
+      // Dropped on empty canvas: it goes back to the top of the world. Nothing
+      // is ever orphaned, so there is nothing floating to look at.
+      const parent = target ? resolveTarget(target) : WORLD_ID;
       setParents((prev) => ({ ...prev, [node.id]: parent }));
-      if (!parent) {
-        setItems((prev) => ({
-          ...prev,
-          [node.id]: { ...prev[node.id], x: node.position.x, y: node.position.y },
-        }));
-      }
     },
     [hitTest, nodes],
   );
@@ -274,19 +271,33 @@ function WorldMapCanvas() {
     [focus],
   );
 
+  /**
+   * A new card belongs to whatever is in the middle — through a category to the
+   * card it hangs off — and the map goes to the category that now holds it, so
+   * you can see and name the thing you just made.
+   */
   const addCard = useCallback(
     (kind: Kind) => {
-      const slot = addCount.current++ % 6;
-      const at = screenToFlowPosition({ x: 130, y: 220 + slot * 44 });
+      const owner = resolveTarget(focus);
       const id = `n-${nextId++}`;
+
       setItems((prev) => ({
         ...prev,
-        [id]: { id, label: kind === 'event' ? 'New event' : 'New object', kind, x: at.x, y: at.y },
+        [id]: { id, label: kind === 'event' ? 'New event' : 'New object', kind, x: 0, y: 0 },
       }));
-      setParents((prev) => ({ ...prev, [id]: null }));
+      setParents((prev) => ({ ...prev, [id]: owner }));
+
+      const category = groupId(owner, kind);
+      setTrail((t) => {
+        const here = t[t.length - 1];
+        if (here === category) return t;
+        // Swapping from one category of the same card to another replaces the
+        // crumb rather than burrowing.
+        return [...(parseGroup(here) ? t.slice(0, -1) : t), category];
+      });
       setEditingId(id);
     },
-    [screenToFlowPosition],
+    [focus],
   );
 
   const edges: Edge[] = useMemo(
@@ -319,9 +330,7 @@ function WorldMapCanvas() {
     [nodes, editingId, dropTargetId, rename, stopEditing, openBadge],
   );
 
-  const unplaced = Object.values(items).filter(
-    (i) => i.kind !== 'world' && !parents[i.id],
-  ).length;
+  const inWorld = Object.values(items).filter((i) => i.kind !== 'world').length;
   // A card in the middle holds things through its badges, not through a ring.
   const centreHolds = nodes.some(
     (n) => n.data.role === 'ring' || (n.data.role === 'centre' && n.data.badges.length > 0),
@@ -367,20 +376,18 @@ function WorldMapCanvas() {
         <Panel position="top-left" className="toolbar">
           <div className="toolbar-title">World map</div>
           <div className="toolbar-hint">
-            Drag a card onto another to make it belong there. Drop it on empty space to take it
-            out again. Click a badge to open that category, a card to go into it, and the middle
-            card to rename it.
+            Drag a card onto another to make it belong there. Drop it on empty space to send it
+            back to the world. Click a badge to open that category, a card to go into it, and the
+            middle card to rename it.
           </div>
           <div className="toolbar-actions">
             <button onClick={() => addCard('event')}>+ Event</button>
             <button onClick={() => addCard('object')}>+ Object</button>
           </div>
           <div className="toolbar-count">
-            {!centreHolds
-              ? `Nothing belongs to ${labelOf(focus, items)} yet`
-              : unplaced === 0
-                ? 'Everything is placed'
-                : `${unplaced} not yet placed`}
+            {centreHolds
+              ? `${inWorld} things in ${labelOf(WORLD_ID, items)}`
+              : `Nothing belongs to ${labelOf(focus, items)} yet`}
           </div>
         </Panel>
       </ReactFlow>

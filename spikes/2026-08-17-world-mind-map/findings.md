@@ -140,6 +140,24 @@ the thing to look at hardest.
 **Confidence:** proven for the rules (23 assertions, rewritten for the
 alternation), assumed for whether it reads as a map at all any more.
 
+## 2026-08-17 — Nothing floats any more
+
+**Tried:** removing unplaced cards entirely, and making `+ Event` put its card
+inside whatever is in the middle rather than adrift on the canvas.
+**Happened:** the staging area went, and with it the second half of the drag
+gesture. Dropping on empty canvas used to mean "belongs to nothing"; it now
+means "back to the top of the world", so a card can be taken out of something
+without being taken out of everything. Adding also navigates: the map goes to
+the category that now holds the new card and puts its name in edit, because
+otherwise a card added at world level would be invisible behind a badge.
+**Means:** the model is simpler — everything in a world belongs somewhere in it
+— but it exposes how little the canvas has left to do at the top. With no ring
+and nothing adrift, **the world screen has nothing draggable on it at all**;
+dragging now only exists inside a category. For a spike about arranging things
+by hand, that is the finding to sit with.
+**Confidence:** proven that it builds and the rules hold; assumed for how it
+plays.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:
@@ -155,16 +173,16 @@ Details that came up and were decided in passing, all cheap to change:
   evenly at 360°/n, clockwise from midnight. A pair is turned a quarter so it
   reads horizontally; every other count takes its angles straight.
 - **Clicking a badge does not select the card under it.** The click stops there.
-- **Loose cards are visible at every depth**, not only at the top, or there
-  would be nowhere to drag them from once you had gone inside something.
-- **Dropping an object on the `Events` stack** attaches it to the world and it
-  appears under Objects. The stack was never a container, only a view.
+- **Dropping an object on the `Events` category** attaches it to the world and
+  it appears under Objects. A category was never a container, only a view.
+- **Adding while a category is in the middle** attaches to that category's
+  owner, so `+ Object` pressed inside `Events` makes an object of the world's
+  and jumps to `Objects`.
 - **Dropping on empty canvas detaches.** Attach and detach are the same gesture
   read two ways, which means there is no second way to break a relationship —
   no menu, no delete key, no unlink button.
 - **Cards can nest.** An object dropped on an event belongs to the event, not to
   the world, and a card cannot be dropped onto its own descendant.
-- **Seed world:** Aetheria, holding three events and one object, with the Salt
+- **Seed world:** Aetheria, holding four events and two objects, with the Salt
   Ledger one level down under the Siege of Ravenhold so that drilling has
-  somewhere to go, and two cards left loose so the difference between placed and
-  unplaced is visible before anything is touched.
+  somewhere to go. Nothing is adrift.

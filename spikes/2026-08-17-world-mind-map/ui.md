@@ -14,13 +14,10 @@ belongs to what by moving it there.
   `Objects 1`, one per kind it holds. These are the way in.
 - **Its ring** — only when a *category* is in the middle: its members, standing
   around it and joined by a thin line.
-- **Loose cards** — events and objects that belong to nothing yet, sitting
-  wherever they were left. Dashed border, slightly dimmed. Visible at every
-  depth, because there has to be somewhere to drag them from.
 - **Breadcrumb**, top centre — `Aetheria › Events › Siege of Ravenhold`. Every
   crumb is a way back.
 - **Toolbar**, top left — the map's name, the rules of the gesture, `+ Event`,
-  `+ Object`, and what is still unplaced.
+  `+ Object`, and how much is in the world.
 - **Canvas controls**, bottom left — zoom in, zoom out, fit.
 
 **Reached from:** it is the whole app.
@@ -80,15 +77,32 @@ A card holding nothing wears nothing, so a bare rim means a leaf. **A category
 in the middle wears nothing either** — you are already inside it, and the ring
 around it is the count.
 
-## The gesture
+## Nothing floats
 
-One gesture, read two ways:
+**Everything in a world belongs somewhere in it.** There are no unplaced cards,
+no staging area, and nothing adrift on the canvas at any depth.
+
+Two rules keep it that way:
+
+- **A new card belongs to whatever is in the middle.** `+ Event` while looking
+  at Aetheria makes an event of Aetheria's; while looking at the Siege of
+  Ravenhold, one of the Siege's. Pressed while a category is in the middle, it
+  belongs to the card that category hangs off, so the kind you press decides
+  which category it lands in, not where you happen to be standing.
+- **Dropping on empty canvas sends a card back to the top of the world**, rather
+  than orphaning it. It is the way out of something, not the way out of
+  everything.
+
+After an add, the map goes to the category that now holds the new card and puts
+its name in edit — so you see the thing you just made rather than a badge count
+going up somewhere.
+
+## The gesture
 
 - **Drag a card onto another card** → it belongs to that card. The target
   brightens and swells while you hold something over it, so the drop is
   committed to before the mouse is released.
-- **Drag a card onto empty canvas** → it belongs to nothing, and stays exactly
-  where it fell.
+- **Drag a card onto empty canvas** → back to the top of the world.
 
 Dropping onto a **category** means dropping onto the card it hangs off — drop an
 event on `Events` and it belongs to the world, which is where those events
@@ -97,14 +111,16 @@ under Objects, because the category you aimed at was never a container.
 
 Consequences, all deliberate:
 
-- There is no second way to relate two things, and no second way to unrelate
-  them. No menu, no unlink button, no drawing a wire between two ports.
-- Cards in a ring cannot be positioned by hand. The ring decides. Dragging one
-  sideways and letting go on empty canvas takes it out of the ring entirely.
+- There is no second way to relate two things. No menu, no unlink button, no
+  drawing a wire between two ports.
+- Cards in a ring cannot be positioned by hand. The ring decides.
 - Nothing can be dropped inside itself or anything below it.
 - Clicking is navigation, so **rename is a click on the middle card** — the one
   place a click has nowhere further to go. A drag that ends on top of the card
   being dragged does not count as a click.
+- **At world level there is nothing to drag.** A card in the middle has no ring
+  and nothing floats, so the only things on the canvas are the world and its
+  badges. Dragging only exists once you are inside a category.
 
 ## Look and feel
 
@@ -118,8 +134,9 @@ Consequences, all deliberate:
   carry a word.
 - **Colour carries kind, not status.** Gold is the world, blue is an event,
   green is an object. A category takes the colour of what it gathers.
-- **Belonging is carried by border, not colour** — dashed and dimmed means
-  loose, solid and shadowed means placed.
+- **There is no unplaced state to draw.** The dashed, dimmed treatment for a
+  card belonging to nothing is still in the stylesheet but nothing produces one
+  any more.
 - **A category looks like any other card.** It was drawn with two dimmer circles
   offset behind it, and that came off once the badges arrived: the badge already
   says how many, and the shoulders were saying it a second time. What marks a
@@ -145,8 +162,9 @@ Consequences, all deliberate:
 - **Only the pair is turned.** Three and up take their angles straight, so one
   badge always sits at the top; two flank the name instead. If a third kind
   arrives, the pair's horizontal reading is lost the moment it does.
-- **Are loose cards adrift or in a tray?** They float wherever they were
-  dropped, at every depth, which will scatter as the world grows.
+- **There is no way to move something up one level.** Dropping on empty canvas
+  goes all the way back to the world, and there is nothing to aim at in between
+  — the breadcrumb is text, not a target.
 - **What is a relationship between two objects?** The map only expresses
   belonging. "The Ember Crown was lost at the Siege" and "the Crown belongs to
   the Siege" are not the same claim, and only the second can be drawn.
