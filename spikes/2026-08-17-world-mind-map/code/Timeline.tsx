@@ -1,5 +1,5 @@
 import { useRef, useState, type Dispatch, type PointerEvent, type SetStateAction } from 'react';
-import type { Items, Parents } from './grouping';
+import { appearancesOf, type Items, type Parents } from './grouping';
 import {
   SCALES,
   applyDrag,
@@ -44,6 +44,8 @@ export function Timeline({
   worldId,
   scale,
   setScale,
+  subject,
+  setSubject,
   onOpen,
 }: {
   items: Items;
@@ -52,6 +54,9 @@ export function Timeline({
   worldId: string;
   scale: Scale;
   setScale: (scale: Scale) => void;
+  /** Whose story this is: the world's, or one object's. */
+  subject: string;
+  setSubject: (id: string) => void;
   onOpen: (id: string) => void;
 }) {
   const lanesRef = useRef<HTMLDivElement>(null);
@@ -64,7 +69,17 @@ export function Timeline({
   const didDrag = useRef(false);
 
   const world = items[worldId];
-  const events = Object.values(items).filter((item) => item.kind === 'event');
+  const objects = Object.values(items).filter((item) => item.kind === 'object');
+
+  // The whole story, or only the part of it one object is caught up in. Never
+  // every object at once: that is a picture nobody can read, and the map
+  // already answers "what holds what".
+  const following = subject === worldId ? null : items[subject];
+  const appearances = following ? new Set(appearancesOf(subject, items, parents)) : null;
+
+  const events = Object.values(items).filter(
+    (item) => item.kind === 'event' && (!appearances || appearances.has(item.id)),
+  );
   const spans: Span[] = events.map((event) => ({ id: event.id, ...spanOf(event) }));
 
   // The axis is derived from what is on it, so dragging would otherwise move
@@ -125,25 +140,45 @@ export function Timeline({
   return (
     <div className={dragging ? 'timeline is-dragging' : 'timeline'}>
       <header className="timeline-head">
-        <h1>{world?.label}</h1>
+        <h1>{following ? following.label : world?.label}</h1>
         <p>
           {events.length === 0
-            ? 'Nothing happens here yet'
-            : `Everything that happens, in order — ${events.length} across ${rows} ${
-                rows === 1 ? 'lane' : 'lanes'
-              }, measured in ${unit}`}
+            ? following
+              ? `${following.label} never touches the story`
+              : 'Nothing happens here yet'
+            : following
+              ? `Where it touches the story — ${events.length} ${
+                  events.length === 1 ? 'time' : 'times'
+                }, measured in ${unit}`
+              : `Everything that happens, in order — ${events.length} across ${rows} ${
+                  rows === 1 ? 'lane' : 'lanes'
+                }, measured in ${unit}`}
         </p>
 
-        <div className="scale-switch">
-          {SCALES.map((option) => (
-            <button
-              key={option.id}
-              className={option.id === scale ? 'on' : ''}
-              onClick={() => setScale(option.id)}
-            >
-              {option.label}
-            </button>
-          ))}
+        <div className="timeline-controls">
+          <label className="subject-select">
+            <span>Following</span>
+            <select value={subject} onChange={(e) => setSubject(e.target.value)}>
+              <option value={worldId}>Everything in {world?.label}</option>
+              {objects.map((object) => (
+                <option key={object.id} value={object.id}>
+                  {object.label}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <div className="scale-switch">
+            {SCALES.map((option) => (
+              <button
+                key={option.id}
+                className={option.id === scale ? 'on' : ''}
+                onClick={() => setScale(option.id)}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
         </div>
       </header>
 
@@ -169,8 +204,18 @@ export function Timeline({
           {events.map((event) => {
             const span = spanOf(event);
             const lane = lanes.get(event.id) ?? 0;
-            const during = parents[event.id] !== worldId ? parents[event.id] : null;
             const held = dragging?.id === event.id;
+
+            // Following one object, a bar says how that object is caught up in
+            // it. Following the world, it says whose event it is.
+            const during = parents[event.id] !== worldId ? parents[event.id] : null;
+            const note = following
+              ? parents[event.id] === subject
+                ? ' · its own history'
+                : ' · it appears here'
+              : during && items[during]
+                ? ` · during ${items[during].label}`
+                : '';
 
             return (
               <div
@@ -198,7 +243,7 @@ export function Timeline({
                   <span className="bar-when">
                     {formatPosition(span.start, scale)}
                     {span.end > span.start ? ` – ${formatPosition(span.end, scale)}` : ''}
-                    {during && items[during] ? ` · during ${items[during].label}` : ''}
+                    {note}
                   </span>
                 </span>
 

@@ -278,6 +278,30 @@ timeout — and the timeline was written without reaching for it. **Any pointer
 drag that ends over its own element needs an answer that outlives the release,**
 not a question about the present.
 
+## 2026-08-17 — Following one thing, with no new relationship
+
+**Tried:** letting the timeline follow a single chosen object rather than the
+whole world, showing only where that object touches the story.
+**Happened:** the interesting part is what it did *not* need. An object turns
+out to touch the story two ways that are already in the tree the map builds —
+events can **belong to it** (the forging and the losing of a crown, which is the
+crown's own history), and it can **belong to an event** (the Salt Ledger, taken
+at Ravenhold). Reading both directions off the existing parent links answers
+"where does this appear" without a second kind of relationship anywhere in the
+model. The seed now shows both.
+**Means:** it also settles what the two views are for. Every object drawn on the
+axis at once is unreadable; one object at a time is a life. And picking the
+subject is what closes the gap left when badges came off the bars — the timeline
+can answer a question about an object again, by being about that object.
+
+**The limit it exposes rather than hides:** an object has exactly one parent, so
+"appears at" is its own events plus *one* event it belongs to. A crown carried
+through four battles cannot say so. That is a many-to-many relationship and a
+decision about the model, not the view, and it has not been taken.
+**Confidence:** proven for `appearancesOf` (five assertions, including both
+directions at once and belonging-to-the-world not counting); assumed for the
+picker.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:

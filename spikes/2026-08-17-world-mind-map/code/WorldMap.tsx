@@ -72,6 +72,11 @@ const SEED_ITEMS: Item[] = [
   { id: 'o-crown', label: 'The Ember Crown', kind: 'object', x: 0, y: 0 },
   { id: 'o-ring', label: "Vela's Ring", kind: 'object', x: 0, y: 0 },
   { id: 'o-ledger', label: 'The Salt Ledger', kind: 'object', x: 0, y: 0 },
+
+  // The Crown's own history: events that belong to an object rather than to
+  // the world, which is how a thing comes to have a story of its own.
+  { id: 'e-forging', label: 'The Forging', kind: 'event', x: 0, y: 0, start: 2, end: 5 },
+  { id: 'e-crownlost', label: 'The Crown is Lost', kind: 'event', x: 0, y: 0, start: 62, end: 66 },
 ];
 
 // Everything in a world belongs somewhere in it. Nothing floats.
@@ -83,6 +88,8 @@ const SEED_PARENTS: Parents = {
   'o-crown': WORLD_ID,
   'o-ring': WORLD_ID,
   'o-ledger': 'e-siege', // the Ledger was taken at Ravenhold
+  'e-forging': 'o-crown', // and these two happened to the Crown
+  'e-crownlost': 'o-crown',
 };
 
 /** What a card is, before the live bits (highlight, rename) are stitched on. */
@@ -524,6 +531,8 @@ export function WorldMap() {
   // What the numbers on the axis are called. A property of the world, not of
   // any event on it.
   const [scale, setScale] = useState<Scale>('pages');
+  // Whose story the timeline is showing: the world's, or one object's.
+  const [subject, setSubject] = useState<string>(WORLD_ID);
 
   const world = { items, setItems, parents, setParents, trail, setTrail };
 
@@ -555,6 +564,8 @@ export function WorldMap() {
           worldId={WORLD_ID}
           scale={scale}
           setScale={setScale}
+          subject={subject}
+          setSubject={setSubject}
           onOpen={(id) => {
             // Handing a card to the map: it opens exactly where that card lives.
             setTrail(trailTo(id, items, parents));

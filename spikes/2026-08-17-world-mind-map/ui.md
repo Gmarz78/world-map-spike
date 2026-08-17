@@ -44,6 +44,8 @@ and how long it runs.
 **Contains:**
 - The **world's name**, and a line beneath it: `Everything that happens, in
   order — 4 across 2 lanes, measured in pages`.
+- The **subject picker** — `Following: Everything in Aetheria`, or one named
+  object.
 - The **scale switch** — `Pages`, `Chapters`, `Dates`.
 - The **axis**, six labelled marks across the story's extent.
 - **One bar per event**, positioned and sized by where it starts and ends,
@@ -66,8 +68,29 @@ event. Circles for identity, rectangles for extent.
 **A bar carries no badges.** What an event holds is the map's question; here the
 only questions are when it starts and when it stops. Badges would answer neither,
 and with three or four kinds of relationship to show they would crowd the one
-thing a bar is for. The answer is a click away, in the view that is about
-belonging.
+thing a bar is for.
+
+## Following one thing
+
+Instead of drawing every object on the axis — a picture nobody can read — **you
+pick one and the timeline shows only where it touches the story.** The header
+becomes that object's name, and the count becomes `Where it touches the story —
+2 times`.
+
+An object touches the story two ways, and both are already in the tree the map
+builds. No second kind of relationship was needed to ask the question:
+
+| How | Reads as | Example |
+|---|---|---|
+| Events **belong to it** | `· its own history` | the forging and the losing of a crown |
+| It **belongs to an event** | `· it appears here` | the Salt Ledger, taken at Ravenhold |
+
+Belonging directly to the world is not an appearance: a thing that merely exists
+in a world has not yet happened anywhere.
+
+Bars can still be dragged while following one object, and the axis still shows
+the whole extent of what is on it — so following the Ember Crown draws exactly
+its own life, from its forging to its loss, with the middle of the story absent.
 
 **A bar is taken hold of in three places.** Anywhere along its middle moves it,
 keeping its length; either end pulls that end alone. The ends are 14px grips
@@ -302,14 +325,17 @@ Consequences, all deliberate:
 - **A new event is guessed onto the end.** Writing one in the map gives it a
   span just past everything already written, eight units long. It has to land
   somewhere, but nothing was asked and nothing is shown about it there.
-- **Objects are not on the timeline at all** — not as bars, and no longer as
-  badges either. They reach the story only by belonging to an event, and this
-  view says nothing about them. Whether an object should have a life of its own
-  along the axis is open.
-- **Each view now answers one question.** The map is about belonging, the
-  timeline about position. That is clean, but it does mean neither view ever
-  shows both at once, and a writer asking "what was the Crown present at?"
-  has to hold two pictures in their head.
+- **An object still has one parent.** So "where it appears" is its own events
+  plus the single event it belongs to. A crown carried through four battles
+  cannot say so without a many-to-many relationship, which is a decision about
+  the model rather than the view, and has not been taken.
+- **Following one object hides the story around it.** The axis re-fits to just
+  its appearances, so the Crown's life is drawn without the Siege it was lost
+  during. Whether the rest of the story should stay as a ghost behind it is the
+  live question.
+- **Only objects can be followed.** When characters and locations arrive the
+  picker will need grouping, and "everything" will need to mean something more
+  careful than "every event in the world".
 - **The scales are not really interchangeable.** The same number is a page, a
   chapter and a day, so a story 96 units long is 96 pages, 96 chapters or three
   months depending on a switch. Real chapters would want a coarser axis than

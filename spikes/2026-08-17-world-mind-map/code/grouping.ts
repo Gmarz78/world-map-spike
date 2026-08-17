@@ -152,6 +152,26 @@ export const kindOf = (id: string, items: Items): Kind =>
   parseGroup(id)?.kind ?? items[id]?.kind ?? 'object';
 
 /**
+ * Where a thing touches the story: the events it is caught up in.
+ *
+ * Two ways, both already in the tree. An object can **belong to** an event —
+ * the Salt Ledger, taken at Ravenhold. Or events can **belong to it** — the
+ * forging and the losing of a crown, which are the crown's own history. No
+ * second kind of relationship is needed to ask the question.
+ */
+export function appearancesOf(id: string, items: Items, parents: Parents): string[] {
+  const events: string[] = [];
+
+  const parent = parents[id];
+  if (parent && items[parent]?.kind === 'event') events.push(parent);
+
+  for (const child of childrenOf(id, parents)) {
+    if (items[child]?.kind === 'event') events.push(child);
+  }
+  return events;
+}
+
+/**
  * The way down to a card from the world: every card and the category it was
  * reached through. What the breadcrumb would have been had you clicked your way
  * there, which is what another view needs to hand something over to the map.

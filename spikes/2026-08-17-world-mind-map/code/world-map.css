@@ -385,11 +385,49 @@
   color: rgba(232, 226, 214, 0.45);
 }
 
+.timeline-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+/* Whose story is being shown. Never every object at once. */
+.subject-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px 4px 14px;
+  border-radius: 999px;
+  background: rgba(16, 19, 26, 0.7);
+  border: 1px solid rgba(232, 226, 214, 0.1);
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  color: rgba(232, 226, 214, 0.4);
+}
+.subject-select select {
+  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  font-size: 12.5px;
+  letter-spacing: 0.02em;
+  color: #f3d492;
+  background: rgba(232, 226, 214, 0.08);
+  border: none;
+  border-radius: 999px;
+  padding: 5px 11px;
+  cursor: pointer;
+  outline: none;
+}
+.subject-select option {
+  background: #14181f;
+  color: #e8e2d6;
+}
+
 /* What the numbers are called — a property of the world, changed here. */
 .scale-switch {
   display: inline-flex;
   gap: 2px;
-  margin-top: 16px;
   padding: 3px;
   border-radius: 999px;
   background: rgba(16, 19, 26, 0.7);
