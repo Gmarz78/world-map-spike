@@ -158,13 +158,18 @@ by hand, that is the finding to sit with.
 **Confidence:** proven that it builds and the rules hold; assumed for how it
 plays.
 
-**Followed by:** a category's ring now ends in an empty slot — a dashed
-`+ New event` in the last place — so once you are inside a category, making a
-card happens where the card will stand rather than from a button in the corner.
-The slot is not a thing in the world: it exists only in the drawing, is never a
-drop target, cannot be dragged, and its line to the middle is dashed. That
-gives the world screen a reason to be only a way in, since everything you make
-is made one level down.
+**Followed by:** a category screen now carries a dashed `+ New event` card, so
+once you are inside a category, making a card happens on the canvas rather than
+from a button in the corner. That gives the world screen a reason to be only a
+way in, since everything you make is made one level down.
+
+It began as the last place in the ring, and moved out to stand on its own to
+the left. In the ring it took a position that implied it was already a member,
+and had a line drawn to the parent for something that does not belong to it
+yet. Off to one side, unjoined, same size and colour as the members it would
+join, it reads as a card waiting to be made. It is not a thing in the world
+either way: it exists only in the drawing, is never a drop target, and cannot
+be dragged.
 
 ## 2026-08-17 — Choices made without being asked
 

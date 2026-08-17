@@ -18,8 +18,11 @@ belongs to what by moving it there.
 - **Its category badges** — large labelled circles on its rim, `Events 3`,
   `Objects 1`, one per kind it holds. These are the way in.
 - **Its ring** — only when a *category* is in the middle: its members, standing
-  around it and joined by a thin line, and at the end of them an **empty slot**
-  — a dashed circle reading `+ New event` — for making another.
+  around it and joined by a thin line.
+- **The new-card slot** — on a category screen, a dashed circle reading
+  `+ New event`, standing off to the left, clear of the ring and joined to
+  nothing. The same size and colour as the members it would join, so it reads
+  as one of them, but plainly not one of them yet.
 - **Breadcrumb**, top centre — `Aetheria › Events › Siege of Ravenhold`. Every
   crumb is a way back.
 - **Toolbar**, top left — the map's name, the rules of the gesture, `+ Event`,
@@ -95,11 +98,16 @@ Two rules keep it that way:
   Ravenhold, one of the Siege's. Pressed while a category is in the middle, it
   belongs to the card that category hangs off, so the kind you press decides
   which category it lands in, not where you happen to be standing.
-- **A category's ring ends in an empty slot.** Inside `Events`, the last place
-  in the ring is a dashed `+ New event`. Pressing it makes the card where it
-  will stand, rather than from a button in the corner — so once you are inside
-  a category, adding is part of the picture rather than part of the chrome. The
+- **A category screen carries its own new-card slot.** Inside `Events`, a
+  dashed `+ New event` stands off to the left of the ring. Pressing it makes
+  the card and drops straight into naming it — so once you are inside a
+  category, adding is part of the picture rather than part of the chrome. The
   toolbar buttons still work and mean the same thing.
+
+  It sits **outside the ring rather than in it**: a place in the ring implied
+  it was already one of the members, and drew a line to the parent for
+  something that does not belong to it yet. Off to one side, unjoined, it reads
+  as a card waiting to be made.
 - **Dropping on empty canvas sends a card back to the top of the world**, rather
   than orphaning it. It is the way out of something, not the way out of
   everything.
@@ -129,8 +137,8 @@ Consequences, all deliberate:
 - Clicking is navigation, so **rename is a click on the middle card** — the one
   place a click has nowhere further to go. A drag that ends on top of the card
   being dragged does not count as a click.
-- **The empty slot is somewhere to press, never somewhere to land.** It is not
-  a drop target and cannot be dragged, and its line to the middle is dashed.
+- **The new-card slot is somewhere to press, never somewhere to land.** It is
+  not a drop target, cannot be dragged, and has no line to anything.
 - **At world level there is nothing to drag.** A card in the middle has no ring
   and nothing floats, so the only things on the canvas are the world and its
   badges. Dragging — and making things — both live inside a category.

@@ -33,7 +33,14 @@ import {
   type Kind,
   type Parents,
 } from './grouping';
-import { CENTRE_SIZE, ITEM_SIZE, ringPositions, toCentre, toTopLeft } from './layout';
+import {
+  CENTRE_SIZE,
+  ITEM_SIZE,
+  ringPositions,
+  ringRadius,
+  toCentre,
+  toTopLeft,
+} from './layout';
 import './world-map.css';
 
 // ---------------------------------------------------------------------------
@@ -124,10 +131,7 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
   ];
 
   const ring = ringEntries(focus, items, parents);
-  // A category's ring ends in an empty place to press, so a new member is made
-  // where it will stand rather than from a button in the corner.
-  const slots = category ? ring.length + 1 : ring.length;
-  const positions = ringPositions(slots);
+  const positions = ringPositions(ring.length);
 
   ring.forEach((entry, i) => {
     nodes.push(
@@ -147,6 +151,8 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
     );
   });
 
+  // Somewhere to make another one: a sibling in look, but standing off to the
+  // left on its own, outside the ring and joined to nothing.
   if (category) {
     nodes.push(
       make(
@@ -155,12 +161,12 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
           label: category.kind === 'event' ? 'New event' : 'New object',
           subtitle: '',
           kind: category.kind,
-          role: 'ring',
+          role: 'loose',
           isGroup: false,
           isAdd: true,
           badges: [],
         },
-        positions[slots - 1],
+        { x: -(ringRadius(ring.length) + ITEM_SIZE + 96), y: 0 },
       ),
     );
   }
@@ -359,9 +365,7 @@ function WorldMapCanvas() {
           source: focus,
           target: n.id,
           type: 'straight',
-          style: n.data.isAdd
-            ? { stroke: 'rgba(226, 214, 190, 0.16)', strokeWidth: 1.5, strokeDasharray: '4 5' }
-            : { stroke: 'rgba(226, 214, 190, 0.3)', strokeWidth: 1.5 },
+          style: { stroke: 'rgba(226, 214, 190, 0.3)', strokeWidth: 1.5 },
         })),
     [nodes, focus],
   );
