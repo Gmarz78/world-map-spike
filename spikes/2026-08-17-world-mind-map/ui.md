@@ -61,11 +61,13 @@ but the top level is no longer a picture of the world so much as a way in to it.
 **A card says what is inside it without being opened**, in coloured circles on
 its rim — blue for events, green for objects, always in that order.
 
-They are spread **evenly right around the rim**, clockwise from midnight, so
-the last one always lands at the top: one sits at midnight; two at 180° and
-360°; three at 120°, 240° and 360°. The spacing is a division of the whole
-circle, not a fan across the bottom, so adding a kind re-spaces the lot rather
-than crowding one arc.
+They are spread **evenly right around the rim**, 360°/n apart, clockwise from
+midnight: one sits at midnight, three at 120°, 240° and 360°, four at the
+quarters. The spacing is a division of the whole circle, not a fan across one
+arc, so adding a kind re-spaces the lot rather than crowding a side.
+
+A **pair is turned a quarter** so it sits horizontally, at 90° and 270° —
+still opposite, but flanking the name rather than stacked above and below it.
 
 They are read two ways depending on where the card is standing:
 
@@ -140,9 +142,9 @@ Consequences, all deliberate:
 - **Kind is the only thing categories are made of.** Regions, arcs, factions,
   chapters — none of them can gather anything, because the split is hardcoded to
   event-versus-object.
-- **Badges divide the whole rim,** so two of them sit at the top and the bottom
-  rather than side by side at the lower corners. Whether a vertical pair reads
-  as well as the fan did is worth a look.
+- **Only the pair is turned.** Three and up take their angles straight, so one
+  badge always sits at the top; two flank the name instead. If a third kind
+  arrives, the pair's horizontal reading is lost the moment it does.
 - **Are loose cards adrift or in a tray?** They float wherever they were
   dropped, at every depth, which will scatter as the world grows.
 - **What is a relationship between two objects?** The map only expresses

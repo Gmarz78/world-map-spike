@@ -12,13 +12,17 @@ const MIN_RADIUS = 380;
 const SPACING = 50;
 
 /**
- * Badges are spread evenly right around a card's rim, clockwise from midnight:
- * two sit at 180° and 360°, three at 120°, 240° and 360°, and so on — so the
- * last one always lands at the top.
+ * Badges are spread evenly right around a card's rim, 360°/n apart, clockwise
+ * from midnight — one at midnight, three at 120°, 240° and 360°, and so on.
+ *
+ * A pair is the exception: turned a quarter so it sits horizontally, at 90° and
+ * 270°, because two badges stacked above and below the name read as a column
+ * rather than as a pair.
  */
 export function badgeAngles(count: number) {
+  const turn = count === 2 ? -90 : 0;
   return Array.from({ length: count }, (_, i) => {
-    const clockwiseFromMidnight = ((i + 1) * 360) / count;
+    const clockwiseFromMidnight = ((i + 1) * 360) / count + turn;
     // Screen angles run from 3 o'clock with y downwards, so midnight is -90°.
     return ((clockwiseFromMidnight - 90) * Math.PI) / 180;
   });
