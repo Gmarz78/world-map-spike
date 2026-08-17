@@ -225,11 +225,50 @@ function WorldMapCanvas() {
     ),
   );
 
+  // A card that has just been named: where it was drafted, so it can be seen
+  // travelling from there into its place in the ring.
+  const [arrival, setArrival] = useState<{ id: string; from: { x: number; y: number } } | null>(
+    null,
+  );
+
   // The picture is rebuilt whenever the world or the depth changes — never
   // mid-drag, since none of these move while a card is in the hand.
   useEffect(() => {
-    setNodes(buildNodes(items, parents, focus));
-  }, [items, parents, focus, setNodes]);
+    const built = buildNodes(items, parents, focus);
+    setNodes(
+      arrival
+        ? built.map((n) => ({
+            ...n,
+            // Everything slides while one card arrives: the ring re-spaces to
+            // make room for it, and that is worth watching.
+            className: 'shifting',
+            position: n.id === arrival.id ? arrival.from : n.position,
+          }))
+        : built,
+    );
+  }, [items, parents, focus, arrival, setNodes]);
+
+  // One frame later the new card is released to its real place, and the
+  // transition carries it there.
+  useEffect(() => {
+    if (!arrival) return;
+    const landing = buildNodes(items, parents, focus).find((n) => n.id === arrival.id);
+    const frame = requestAnimationFrame(() => {
+      if (landing) {
+        setNodes((ns) =>
+          ns.map((n) => (n.id === arrival.id ? { ...n, position: landing.position } : n)),
+        );
+      }
+      // The ring grows as it takes another member, so the view eases out with
+      // it rather than letting the new card land off the edge.
+      fitView({ padding: 0.22, duration: 480 });
+    });
+    const done = setTimeout(() => setArrival(null), 620);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(done);
+    };
+  }, [arrival, items, parents, focus, setNodes, fitView]);
 
   // The `fitView` prop alone does not survive the first paint here — nodes are
   // not measured yet when it fires. Fit once they have real sizes, and again
@@ -248,9 +287,32 @@ function WorldMapCanvas() {
     return () => clearTimeout(t);
   }, [trail, fitView]);
 
-  const rename = useCallback((id: string, label: string) => {
-    setItems((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], label } } : prev));
-  }, []);
+  /** Naming the draft is what brings the card into being, and into the ring. */
+  const createCard = useCallback(
+    (kind: Kind, owner: string, label: string) => {
+      const id = `n-${nextId++}`;
+      const slot = nodes.find((n) => n.data.isAdd);
+
+      setItems((prev) => ({ ...prev, [id]: { id, label, kind, x: 0, y: 0 } }));
+      setParents((prev) => ({ ...prev, [id]: owner }));
+      setArrival({ id, from: slot ? slot.position : { x: 0, y: 0 } });
+    },
+    [nodes],
+  );
+
+  const rename = useCallback(
+    (id: string, label: string) => {
+      // The empty slot borrows the rename channel: a name typed there makes a
+      // card, and a blank one makes nothing.
+      const slot = parseAddSlot(id);
+      if (slot) {
+        if (label) createCard(slot.kind, slot.owner, label);
+        return;
+      }
+      setItems((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], label } } : prev));
+    },
+    [createCard],
+  );
   const stopEditing = useCallback(() => setEditingId(null), []);
 
   /** A badge on the middle card is a category; clicking it goes there. */
@@ -307,21 +369,12 @@ function WorldMapCanvas() {
 
   /**
    * A new card belongs to whatever is in the middle — through a category to the
-   * card it hangs off — and the map goes to the category that now holds it, so
-   * you can see and name the thing you just made.
+   * card it hangs off. Pressing the toolbar goes to that category and opens the
+   * draft there, so a card is always named in the place it will stand.
    */
-  const addCard = useCallback(
+  const startDraft = useCallback(
     (kind: Kind) => {
-      const owner = resolveTarget(focus);
-      const id = `n-${nextId++}`;
-
-      setItems((prev) => ({
-        ...prev,
-        [id]: { id, label: kind === 'event' ? 'New event' : 'New object', kind, x: 0, y: 0 },
-      }));
-      setParents((prev) => ({ ...prev, [id]: owner }));
-
-      const category = groupId(owner, kind);
+      const category = groupId(resolveTarget(focus), kind);
       setTrail((t) => {
         const here = t[t.length - 1];
         if (here === category) return t;
@@ -329,20 +382,19 @@ function WorldMapCanvas() {
         // crumb rather than burrowing.
         return [...(parseGroup(here) ? t.slice(0, -1) : t), category];
       });
-      setEditingId(id);
+      setEditingId(addSlotId(category));
     },
     [focus],
   );
 
-  // Press the empty slot to make one. Click the middle to rename it. Click
+  // Press the empty slot to name one. Click the middle to rename it. Click
   // anything else to go into it.
   const onNodeClick: NodeMouseHandler = useCallback(
     (_, node) => {
       if (didDrag.current) return;
 
-      const slot = parseAddSlot(node.id);
-      if (slot) {
-        addCard(slot.kind);
+      if (parseAddSlot(node.id)) {
+        setEditingId(node.id);
         return;
       }
 
@@ -353,7 +405,7 @@ function WorldMapCanvas() {
       setEditingId(null);
       setTrail((t) => [...t, node.id]);
     },
-    [focus, addCard],
+    [focus],
   );
 
   const edges: Edge[] = useMemo(
@@ -437,8 +489,8 @@ function WorldMapCanvas() {
             middle card to rename it.
           </div>
           <div className="toolbar-actions">
-            <button onClick={() => addCard('event')}>+ Event</button>
-            <button onClick={() => addCard('object')}>+ Object</button>
+            <button onClick={() => startDraft('event')}>+ Event</button>
+            <button onClick={() => startDraft('object')}>+ Object</button>
           </div>
           <div className="toolbar-count">
             {centreHolds

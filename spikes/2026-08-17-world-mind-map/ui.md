@@ -99,22 +99,40 @@ Two rules keep it that way:
   belongs to the card that category hangs off, so the kind you press decides
   which category it lands in, not where you happen to be standing.
 - **A category screen carries its own new-card slot.** Inside `Events`, a
-  dashed `+ New event` stands off to the left of the ring. Pressing it makes
-  the card and drops straight into naming it — so once you are inside a
-  category, adding is part of the picture rather than part of the chrome. The
-  toolbar buttons still work and mean the same thing.
+  dashed `+ New event` stands off to the left of the ring — so once you are
+  inside a category, adding is part of the picture rather than part of the
+  chrome. The toolbar buttons take you to the right category and open a draft
+  there, so a card is always named in the place it will stand.
 
   It sits **outside the ring rather than in it**: a place in the ring implied
   it was already one of the members, and drew a line to the parent for
   something that does not belong to it yet. Off to one side, unjoined, it reads
   as a card waiting to be made.
+
+## Making a card
+
+Nothing is created by pressing. **A card comes into being when it is named.**
+
+1. Press the slot. The `+` gives way to a field reading `Name the event`, in
+   place, off to the left where the slot stands. Nothing exists yet.
+2. Type, and press Enter. Only now is the card made and given to the parent.
+3. It **travels from the slot into its place in the ring** while the ring
+   re-spaces around it to make room, and the view eases out to keep the whole
+   of it in frame — about half a second for all three.
+
+Leaving it blank, or pressing Escape, makes nothing at all. There is no
+half-made card called "New event" to tidy up afterwards, and the name is never
+typed into a thing that already exists somewhere behind a badge.
+
+Movement is only ever used for this. Dragging tracks the pointer exactly, with
+no easing on it, so the one thing that glides is the one thing that happened
+without you moving it.
 - **Dropping on empty canvas sends a card back to the top of the world**, rather
   than orphaning it. It is the way out of something, not the way out of
   everything.
 
-After an add, the map goes to the category that now holds the new card and puts
-its name in edit — so you see the thing you just made rather than a badge count
-going up somewhere.
+Because a card is named before it exists, you always watch it join something —
+never a badge count going up somewhere out of sight.
 
 ## The gesture
 

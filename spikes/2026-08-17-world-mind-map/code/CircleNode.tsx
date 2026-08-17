@@ -64,7 +64,7 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
       <Handle type="source" position={Position.Bottom} style={hiddenHandle} isConnectable={false} />
 
       <span className="card-face">
-        {data.isAdd && <span className="plus">+</span>}
+        {data.isAdd && !data.editing && <span className="plus">+</span>}
 
         {/* In the ring, a card wears its kind above its name. In the middle
             that job is done by the sub-heading below it instead. */}
@@ -73,19 +73,23 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
         )}
 
         {data.editing ? (
+          // A draft on the empty slot starts blank and commits nothing when it
+          // is left blank — the card does not exist until it has a name.
           <input
             className="nodrag label-input"
             autoFocus
-            defaultValue={data.label}
+            placeholder={data.isAdd ? `Name the ${data.kind}` : undefined}
+            defaultValue={data.isAdd ? '' : data.label}
             onFocus={(e) => e.currentTarget.select()}
             onBlur={(e) => {
-              data.onRename(id, e.currentTarget.value.trim() || data.label);
+              const typed = e.currentTarget.value.trim();
+              data.onRename(id, data.isAdd ? typed : typed || data.label);
               data.onEditDone();
             }}
             onKeyDown={(e) => {
               if (e.key === 'Enter') e.currentTarget.blur();
               if (e.key === 'Escape') {
-                e.currentTarget.value = data.label;
+                e.currentTarget.value = data.isAdd ? '' : data.label;
                 e.currentTarget.blur();
               }
             }}

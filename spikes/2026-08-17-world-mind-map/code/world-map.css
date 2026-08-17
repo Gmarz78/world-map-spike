@@ -16,6 +16,12 @@
   pointer-events: none;
 }
 
+/* Only while a new card is arriving — never during a drag, which must track
+   the pointer exactly. */
+.react-flow__node.shifting {
+  transition: transform 480ms cubic-bezier(0.22, 0.75, 0.3, 1);
+}
+
 /* --- the cards ---------------------------------------------------------- */
 
 .circle-node {

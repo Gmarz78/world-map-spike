@@ -171,6 +171,26 @@ join, it reads as a card waiting to be made. It is not a thing in the world
 either way: it exists only in the drawing, is never a drop target, and cannot
 be dragged.
 
+## 2026-08-17 — A card is named before it exists
+
+**Tried:** moving creation from the press to the naming — the slot becomes a
+field where it stands, and only a typed name brings a card into being — then
+showing it travel into the ring.
+**Happened:** the order of operations got honest. Before, pressing made a card
+called "New event" and then asked you to fix the name, which meant a blank
+press left litter in the world and an Escape had nothing sensible to do. Now
+Escape and an empty field both make nothing, because nothing was made yet.
+**How the animation works:** the card is built at the slot's own position with a
+transition class on every node, and released to its real place one frame later,
+so the browser animates the difference. The ring re-spaces at the same time and
+the view eases out with it, all on the same 480ms curve. The transition is
+**only** applied during an arrival — a permanent one would put easing on
+dragging, where the card must track the pointer exactly.
+**Means:** movement now means one thing in this interface: something happened
+that you did not do with your own hand.
+**Confidence:** proven that it builds; assumed for the timing, which has not
+been watched (still no frames in the pane).
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:
