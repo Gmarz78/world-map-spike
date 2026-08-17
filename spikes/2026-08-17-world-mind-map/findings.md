@@ -67,21 +67,61 @@ unverified until it is opened in a visible window.
 **Confidence:** proven (the cause), assumed (that the map behaves as intended
 once frames run).
 
+## 2026-08-17 — Decomposition: one ring at a time
+
+**Tried:** collapsing two or more children of the same kind into a single
+`Events` / `Objects` card that you click into, instead of drawing the whole
+tree at once.
+**Happened:** the map went from a recursive spider diagram to one ring at a
+time, with a breadcrumb for the way back. The change that made it cheap: a
+stack has no identity of its own, only `grp:<owner>:<kind>`, so nothing about
+grouping is stored and the stacks re-form from whatever the relationships
+currently are. Taking an event away from a world that had two dissolves the
+stack back into a named card with nothing to clean up.
+**Means:** the whole grouping rule lives in one small module (`grouping.ts`)
+with no React in it, so it can be exercised without a browser — which is how it
+was checked (14 assertions covering stacking, dissolving, drilling in,
+resolving a drop on a stack to its owner, and the descendant guard).
+**Confidence:** proven for the rules, assumed for how it feels.
+
+## 2026-08-17 — Clicking now means two things, and one of them had to move
+
+**Tried:** click-a-card-to-go-into-it, alongside the existing drag gesture.
+**Happened:** rename could no longer be a double-click, since the first click
+would already have drilled in. It moved to a **single click on the middle
+card** — the one card where a click has nowhere further to go. A separate trap
+came with it: a drag that finishes on top of the card being dragged also fires a
+DOM `click`, which read as "go into this" the instant you placed something. It
+is suppressed with a flag cleared on a timeout after the drag, since the click
+always arrives in the same task as the pointer-up.
+**Means:** navigation and arrangement now share the pointer, and the seam
+between them is the one thing most likely to feel wrong in use.
+**Confidence:** assumed — the flag is written and builds, but has not been
+driven (no frames; see above).
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:
 
-- **The world cannot be dragged.** It is the centre of the map and the layout
-  puts it at the origin; panning moves the canvas instead.
+- **The focused card cannot be dragged.** It is the middle of the map; panning
+  moves the canvas instead.
 - **Attached cards have no position of their own.** Where a card sits falls out
   of whose child it is and how many siblings it has, so dropping something on
   the world rearranges the ring rather than leaving it where the hand let go.
+- **The stacking threshold is two.** One event shows as itself; two become
+  `Events`. `GROUP_AT` in `grouping.ts`, one number.
+- **Events come before objects** in the ring, always, so the shape does not
+  jump about as things are added.
+- **Loose cards are visible at every depth**, not only at the top, or there
+  would be nowhere to drag them from once you had gone inside something.
+- **Dropping an object on the `Events` stack** attaches it to the world and it
+  appears under Objects. The stack was never a container, only a view.
 - **Dropping on empty canvas detaches.** Attach and detach are the same gesture
   read two ways, which means there is no second way to break a relationship —
   no menu, no delete key, no unlink button.
 - **Cards can nest.** An object dropped on an event belongs to the event, not to
-  the world. The seed data does not show this, but the layout and the hit test
-  both handle it, and a card cannot be dropped onto its own descendant.
-- **Seed world:** Aetheria, with two things already placed and five loose, so
-  the difference between placed and unplaced is visible before anything is
-  touched.
+  the world, and a card cannot be dropped onto its own descendant.
+- **Seed world:** Aetheria, holding three events and one object, with the Salt
+  Ledger one level down under the Siege of Ravenhold so that drilling has
+  somewhere to go, and two cards left loose so the difference between placed and
+  unplaced is visible before anything is touched.

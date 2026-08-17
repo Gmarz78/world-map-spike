@@ -1,11 +1,15 @@
 import { Handle, Position, type NodeProps, type Node } from '@xyflow/react';
+import { showsCount, type Kind } from './grouping';
 
-export type Kind = 'world' | 'event' | 'object';
+/** Where a card is standing right now, which is not a property of the card. */
+export type Role = 'centre' | 'ring' | 'loose';
 
 export type MapNodeData = {
   label: string;
   kind: Kind;
-  attached: boolean;
+  role: Role;
+  isGroup: boolean;
+  count: number;
   dropTarget: boolean;
   editing: boolean;
   onRename: (id: string, label: string) => void;
@@ -35,41 +39,54 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
   const classes = [
     'circle-node',
     `kind-${data.kind}`,
-    data.attached ? 'attached' : 'loose',
+    `role-${data.role}`,
+    data.isGroup ? 'is-group' : '',
     data.dropTarget ? 'drop-target' : '',
-    selected ? 'is-selected' : '',
+    selected && data.role !== 'centre' ? 'is-selected' : '',
   ]
     .filter(Boolean)
     .join(' ');
 
   return (
     <div className={classes}>
+      {/* A group is a stack of cards, said once — the shoulders behind it. */}
+      {data.isGroup && (
+        <>
+          <span className="stack stack-2" />
+          <span className="stack stack-1" />
+        </>
+      )}
+
       <Handle type="target" position={Position.Top} style={hiddenHandle} isConnectable={false} />
       <Handle type="source" position={Position.Bottom} style={hiddenHandle} isConnectable={false} />
 
-      {data.kind !== 'world' && <span className="kind-tag">{data.kind}</span>}
+      <span className="card-face">
+        {data.kind !== 'world' && !data.isGroup && <span className="kind-tag">{data.kind}</span>}
 
-      {data.editing ? (
-        <input
-          className="nodrag label-input"
-          autoFocus
-          defaultValue={data.label}
-          onFocus={(e) => e.currentTarget.select()}
-          onBlur={(e) => {
-            data.onRename(id, e.currentTarget.value.trim() || data.label);
-            data.onEditDone();
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') e.currentTarget.blur();
-            if (e.key === 'Escape') {
-              e.currentTarget.value = data.label;
-              e.currentTarget.blur();
-            }
-          }}
-        />
-      ) : (
-        <span className="label">{data.label}</span>
-      )}
+        {data.editing ? (
+          <input
+            className="nodrag label-input"
+            autoFocus
+            defaultValue={data.label}
+            onFocus={(e) => e.currentTarget.select()}
+            onBlur={(e) => {
+              data.onRename(id, e.currentTarget.value.trim() || data.label);
+              data.onEditDone();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') e.currentTarget.blur();
+              if (e.key === 'Escape') {
+                e.currentTarget.value = data.label;
+                e.currentTarget.blur();
+              }
+            }}
+          />
+        ) : (
+          <span className="label">{data.label}</span>
+        )}
+
+        {showsCount(data.isGroup, data.role) && <span className="count">{data.count}</span>}
+      </span>
     </div>
   );
 }

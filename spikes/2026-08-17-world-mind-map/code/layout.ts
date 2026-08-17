@@ -1,59 +1,34 @@
-// Radial mind-map layout. Attached nodes have no position of their own —
-// where they sit falls out of who their parent is and how many siblings
-// they have, the same way a chapter's number falls out of what precedes it.
+// One ring at a time. Whatever is focused sits at the origin and its children
+// stand around it; everything deeper is reached by clicking in, not by drawing
+// it smaller.
 
-export const WORLD_SIZE = 176;
+export const CENTRE_SIZE = 180;
 export const ITEM_SIZE = 116;
+export const GROUP_SIZE = 130;
 
-export const RING_1 = 320;
-export const RING_2 = 215;
+const MIN_RADIUS = 300;
+const SPACING = 46;
 
-type Placeable = { id: string; parentId: string | null; isWorld: boolean };
-
-/** Centre points, keyed by node id. Loose nodes are absent — they keep theirs. */
-export function radialLayout(items: Placeable[]): Record<string, { x: number; y: number }> {
-  const children: Record<string, string[]> = {};
-  for (const item of items) {
-    if (item.parentId) (children[item.parentId] ??= []).push(item.id);
-  }
-
-  const centres: Record<string, { x: number; y: number }> = {};
-  const world = items.find((i) => i.isWorld);
-  if (!world) return centres;
-
-  centres[world.id] = { x: 0, y: 0 };
-  place(world.id, 0, 0, -Math.PI / 2, Math.PI * 2, 1);
-
-  function place(id: string, cx: number, cy: number, from: number, span: number, depth: number) {
-    const kids = children[id] ?? [];
-    if (kids.length === 0) return;
-
-    const radius = depth === 1 ? RING_1 : RING_2;
-    const step = span / kids.length;
-
-    kids.forEach((kid, i) => {
-      const angle = from + step * (i + 0.5);
-      const x = cx + Math.cos(angle) * radius;
-      const y = cy + Math.sin(angle) * radius;
-      centres[kid] = { x, y };
-      // Grandchildren fan outward from the parent's own direction, never back
-      // over the middle of the map.
-      place(kid, x, y, angle - Math.min(step, 1.5) / 2, Math.min(step, 1.5), depth + 1);
-    });
-  }
-
-  return centres;
+export function ringRadius(count: number) {
+  return Math.max(MIN_RADIUS, (count * SPACING) / 1.6);
 }
 
-export const sizeOf = (isWorld: boolean) => (isWorld ? WORLD_SIZE : ITEM_SIZE);
+/** Centres for `count` cards, evenly spaced, first one at the top. */
+export function ringPositions(count: number) {
+  const radius = ringRadius(count);
+  return Array.from({ length: count }, (_, i) => {
+    const angle = -Math.PI / 2 + (Math.PI * 2 * i) / count;
+    return { x: Math.cos(angle) * radius, y: Math.sin(angle) * radius };
+  });
+}
 
 /** React Flow positions from the top-left; the layout thinks in centres. */
-export const toTopLeft = (centre: { x: number; y: number }, isWorld: boolean) => ({
-  x: centre.x - sizeOf(isWorld) / 2,
-  y: centre.y - sizeOf(isWorld) / 2,
+export const toTopLeft = (centre: { x: number; y: number }, size: number) => ({
+  x: centre.x - size / 2,
+  y: centre.y - size / 2,
 });
 
-export const toCentre = (topLeft: { x: number; y: number }, isWorld: boolean) => ({
-  x: topLeft.x + sizeOf(isWorld) / 2,
-  y: topLeft.y + sizeOf(isWorld) / 2,
+export const toCentre = (topLeft: { x: number; y: number }, size: number) => ({
+  x: topLeft.x + size / 2,
+  y: topLeft.y + size / 2,
 });

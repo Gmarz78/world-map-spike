@@ -1,8 +1,5 @@
 .world-map-root {
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(1100px 800px at 50% 45%, #1a2030 0%, #0e1118 70%);
+  background: radial-gradient(1100px 800px at 50% 45%, #1a2030 0%, #0e1118 70%);
   font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   color: #e8e2d6;
 }
@@ -15,9 +12,6 @@
   padding: 0;
   border-radius: 50%;
 }
-.react-flow__node.selected .circle-node {
-  box-shadow: 0 0 0 2px rgba(232, 226, 214, 0.55), 0 18px 40px rgba(0, 0, 0, 0.55);
-}
 .react-flow__handle {
   pointer-events: none;
 }
@@ -25,8 +19,22 @@
 /* --- the cards ---------------------------------------------------------- */
 
 .circle-node {
+  position: relative;
   width: 100%;
   height: 100%;
+  border-radius: 50%;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease,
+    border-color 140ms ease;
+}
+
+.circle-node .card-face {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   border-radius: 50%;
   display: flex;
   flex-direction: column;
@@ -36,11 +44,8 @@
   padding: 10px 14px;
   text-align: center;
   box-sizing: border-box;
-  cursor: grab;
-  transition:
-    transform 140ms ease,
-    box-shadow 140ms ease,
-    border-color 140ms ease;
+  background: inherit;
+  border: inherit;
 }
 
 .circle-node .label {
@@ -58,6 +63,12 @@
   opacity: 0.55;
 }
 
+.circle-node .count {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  opacity: 0.62;
+}
+
 .circle-node .label-input {
   width: 78%;
   background: rgba(0, 0, 0, 0.35);
@@ -73,40 +84,52 @@
 
 /* --- kinds -------------------------------------------------------------- */
 
-.kind-world {
+.kind-world .card-face {
   background: radial-gradient(circle at 38% 32%, #3a2f1c 0%, #241d12 72%);
   border: 2px solid #d9a441;
-  box-shadow:
-    0 0 0 8px rgba(217, 164, 65, 0.06),
-    0 22px 50px rgba(0, 0, 0, 0.55);
-  cursor: default;
 }
 .kind-world .label {
-  font-size: 21px;
   color: #f3d492;
-  letter-spacing: 0.02em;
 }
 
-.kind-event {
+.kind-event .card-face {
   background: radial-gradient(circle at 38% 30%, #22314f 0%, #16203a 72%);
   border: 2px solid #6f9bf0;
   color: #dce6fb;
 }
 
-.kind-object {
+.kind-object .card-face {
   background: radial-gradient(circle at 38% 30%, #16382f 0%, #0f2a25 72%);
   border: 2px solid #45c4a5;
   color: #d5f2e9;
 }
 
-/* --- placed vs not ------------------------------------------------------ */
+/* --- roles: where a card is standing ------------------------------------ */
 
-.circle-node.loose {
-  border-style: dashed;
-  opacity: 0.82;
+.role-centre {
+  cursor: text;
+  box-shadow:
+    0 0 0 10px rgba(255, 255, 255, 0.025),
+    0 24px 55px rgba(0, 0, 0, 0.55);
 }
-.circle-node.attached {
+.role-centre .label {
+  font-size: 20px;
+  letter-spacing: 0.02em;
+}
+.role-centre .kind-tag {
+  font-size: 9.5px;
+}
+
+.role-ring {
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.45);
+}
+
+/* Adrift: belongs to nothing, sits where it was left. */
+.role-loose .card-face {
+  border-style: dashed;
+}
+.role-loose {
+  opacity: 0.82;
 }
 
 .react-flow__node.dragging .circle-node {
@@ -117,10 +140,86 @@
 
 .circle-node.drop-target {
   transform: scale(1.08);
-  border-style: solid;
   box-shadow:
     0 0 0 4px rgba(243, 212, 146, 0.35),
     0 0 34px rgba(243, 212, 146, 0.25);
+}
+.circle-node.drop-target .card-face {
+  border-style: solid;
+}
+
+.circle-node.is-selected .card-face {
+  box-shadow: inset 0 0 0 1px rgba(232, 226, 214, 0.4);
+}
+
+/* --- groups: more than one of a kind, stacked --------------------------- */
+
+.is-group .stack {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  background: #131826;
+  z-index: 1;
+}
+.is-group.kind-event .stack {
+  color: rgba(111, 155, 240, 0.55);
+}
+.is-group.kind-object .stack {
+  color: rgba(69, 196, 165, 0.55);
+}
+.is-group .stack-1 {
+  transform: translate(6px, 7px) scale(0.985);
+}
+.is-group .stack-2 {
+  transform: translate(12px, 14px) scale(0.965);
+  opacity: 0.55;
+}
+.is-group .label {
+  font-size: 15px;
+  letter-spacing: 0.03em;
+}
+.is-group.role-centre .label {
+  font-size: 21px;
+}
+.is-group:hover {
+  transform: translate(-2px, -3px);
+}
+
+/* --- breadcrumb --------------------------------------------------------- */
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 7px 12px;
+  border-radius: 999px;
+  background: rgba(16, 19, 26, 0.86);
+  border: 1px solid rgba(232, 226, 214, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.crumb {
+  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  font-size: 13px;
+  color: rgba(232, 226, 214, 0.55);
+  background: none;
+  border: none;
+  padding: 2px 6px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+.crumb:hover {
+  color: #f3d492;
+  background: rgba(232, 226, 214, 0.07);
+}
+.crumb.here {
+  color: #f3d492;
+  cursor: default;
+}
+.crumb-sep {
+  color: rgba(232, 226, 214, 0.3);
+  font-size: 12px;
 }
 
 /* --- toolbar ------------------------------------------------------------ */

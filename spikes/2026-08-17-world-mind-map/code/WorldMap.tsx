@@ -14,87 +14,173 @@ import {
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 
-import { CircleNode, type MapNode, type MapNodeData, type Kind } from './CircleNode';
-import { radialLayout, sizeOf, toTopLeft, toCentre } from './layout';
+import { CircleNode, type MapNode, type MapNodeData, type Role } from './CircleNode';
+import {
+  descendantsOf,
+  kindOf,
+  labelOf,
+  parseGroup,
+  resolveTarget,
+  ringEntries,
+  type Item,
+  type Items,
+  type Kind,
+  type Parents,
+} from './grouping';
+import {
+  CENTRE_SIZE,
+  GROUP_SIZE,
+  ITEM_SIZE,
+  ringPositions,
+  toCentre,
+  toTopLeft,
+} from './layout';
 import './world-map.css';
 
 // ---------------------------------------------------------------------------
 // The world, inline. Nothing is loaded, nothing is saved.
 // ---------------------------------------------------------------------------
 
-type Seed = { id: string; label: string; kind: Kind; parent?: string; at?: { x: number; y: number } };
+const WORLD_ID = 'world';
 
-const SEED: Seed[] = [
-  { id: 'world', label: 'Aetheria', kind: 'world' },
+const SEED_ITEMS: Item[] = [
+  { id: WORLD_ID, label: 'Aetheria', kind: 'world', x: 0, y: 0 },
 
-  { id: 'e-sundering', label: 'The Sundering', kind: 'event', parent: 'world' },
-  { id: 'o-crown', label: 'The Ember Crown', kind: 'object', parent: 'world' },
+  { id: 'e-sundering', label: 'The Sundering', kind: 'event', x: 0, y: 0 },
+  { id: 'e-coronation', label: 'Coronation of Vela', kind: 'event', x: 0, y: 0 },
+  { id: 'e-siege', label: 'Siege of Ravenhold', kind: 'event', x: 0, y: 0 },
+  { id: 'o-crown', label: 'The Ember Crown', kind: 'object', x: 0, y: 0 },
+  { id: 'o-ledger', label: 'The Salt Ledger', kind: 'object', x: 0, y: 0 },
 
-  { id: 'e-coronation', label: 'Coronation of Vela', kind: 'event', at: { x: -640, y: -300 } },
-  { id: 'e-siege', label: 'Siege of Ravenhold', kind: 'event', at: { x: -640, y: -120 } },
-  { id: 'e-winter', label: 'The Long Winter', kind: 'event', at: { x: -640, y: 60 } },
-  { id: 'o-ledger', label: 'The Salt Ledger', kind: 'object', at: { x: 620, y: -180 } },
-  { id: 'o-ring', label: "Vela's Ring", kind: 'object', at: { x: 620, y: 0 } },
+  { id: 'e-winter', label: 'The Long Winter', kind: 'event', x: -660, y: -80 },
+  { id: 'o-ring', label: "Vela's Ring", kind: 'object', x: 660, y: -20 },
 ];
 
-const nodeTypes = { circle: CircleNode };
+const SEED_PARENTS: Parents = {
+  'e-sundering': WORLD_ID,
+  'e-coronation': WORLD_ID,
+  'e-siege': WORLD_ID,
+  'o-crown': WORLD_ID,
+  'o-ledger': 'e-siege', // the Ledger was taken at Ravenhold
+};
 
+/** What a card is, before the live bits (highlight, rename) are stitched on. */
+type CardSpec = { label: string; kind: Kind; role: Role; isGroup: boolean; count: number };
+
+export const sizeOf = (data: { role: string; isGroup: boolean }) =>
+  data.role === 'centre' ? CENTRE_SIZE : data.isGroup ? GROUP_SIZE : ITEM_SIZE;
+
+// ---------------------------------------------------------------------------
+
+const blankData = {
+  dropTarget: false,
+  editing: false,
+  onRename: () => {},
+  onEditDone: () => {},
+};
+
+/** The whole picture, from the focus down one level, plus whatever is adrift. */
+function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
+  const make = (id: string, spec: CardSpec, centre: { x: number; y: number }): MapNode => {
+    const size = sizeOf(spec);
+    return {
+      id,
+      type: 'circle' as const,
+      position: toTopLeft(centre, size),
+      draggable: spec.role !== 'centre' && !spec.isGroup,
+      style: { width: size, height: size },
+      data: { ...blankData, ...spec } as MapNodeData,
+    };
+  };
+
+  const nodes: MapNode[] = [
+    make(
+      focus,
+      {
+        label: labelOf(focus, items),
+        kind: kindOf(focus, items),
+        role: 'centre',
+        isGroup: !!parseGroup(focus),
+        count: 0,
+      },
+      { x: 0, y: 0 },
+    ),
+  ];
+
+  const ring = ringEntries(focus, items, parents);
+  const positions = ringPositions(ring.length);
+  ring.forEach((entry, i) => {
+    nodes.push(
+      make(
+        entry.id,
+        {
+          label: entry.label,
+          kind: entry.kind,
+          role: 'ring',
+          isGroup: entry.isGroup,
+          count: entry.count,
+        },
+        positions[i],
+      ),
+    );
+  });
+
+  // Cards that belong to nothing are visible at every depth — they have to be,
+  // or there would be nowhere to drag them from.
+  for (const item of Object.values(items)) {
+    if (item.kind === 'world' || parents[item.id] || item.id === focus) continue;
+    nodes.push(
+      make(
+        item.id,
+        { label: item.label, kind: item.kind, role: 'loose', isGroup: false, count: 1 },
+        toCentre({ x: item.x, y: item.y }, ITEM_SIZE),
+      ),
+    );
+  }
+
+  return nodes;
+}
+
+const nodeTypes = { circle: CircleNode };
 let nextId = 1;
+
+// ---------------------------------------------------------------------------
 
 function WorldMapCanvas() {
   const { screenToFlowPosition, fitView } = useReactFlow();
-  const [parents, setParents] = useState<Record<string, string | null>>(() =>
-    Object.fromEntries(SEED.map((s) => [s.id, s.parent ?? null])),
+
+  const [items, setItems] = useState<Items>(() =>
+    Object.fromEntries(SEED_ITEMS.map((i) => [i.id, i])),
   );
+  const [parents, setParents] = useState<Parents>(SEED_PARENTS);
+  const [trail, setTrail] = useState<string[]>([WORLD_ID]);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [dropTargetId, setDropTargetId] = useState<string | null>(null);
   const addCount = useRef(0);
 
+  const focus = trail[trail.length - 1];
+
   const [nodes, setNodes, onNodesChange] = useNodesState<MapNode>(
-    useMemo(() => {
-      const seeded: MapNode[] = SEED.map((s) => ({
-        id: s.id,
-        type: 'circle' as const,
-        position: s.at ?? { x: 0, y: 0 },
-        draggable: s.kind !== 'world',
-        style: { width: sizeOf(s.kind === 'world'), height: sizeOf(s.kind === 'world') },
-        data: {
-          label: s.label,
-          kind: s.kind,
-          attached: s.kind === 'world' || !!s.parent,
-          dropTarget: false,
-          editing: false,
-          onRename: () => {},
-          onEditDone: () => {},
-        } as MapNodeData,
-      }));
-      return applyLayout(seeded, Object.fromEntries(SEED.map((s) => [s.id, s.parent ?? null])));
-    }, []),
+    useMemo(
+      () =>
+        buildNodes(
+          Object.fromEntries(SEED_ITEMS.map((i) => [i.id, i])),
+          SEED_PARENTS,
+          WORLD_ID,
+        ),
+      [],
+    ),
   );
 
-  // Attached nodes are placed by the map; loose ones keep where they were left.
-  function applyLayout(ns: MapNode[], parentMap: Record<string, string | null>): MapNode[] {
-    const centres = radialLayout(
-      ns.map((n) => ({
-        id: n.id,
-        parentId: parentMap[n.id] ?? null,
-        isWorld: n.data.kind === 'world',
-      })),
-    );
-    return ns.map((n) => {
-      const isWorld = n.data.kind === 'world';
-      const centre = centres[n.id];
-      const attached = isWorld || !!parentMap[n.id];
-      return {
-        ...n,
-        position: centre ? toTopLeft(centre, isWorld) : n.position,
-        data: { ...n.data, attached },
-      };
-    });
-  }
+  // The picture is rebuilt whenever the world or the depth changes — never
+  // mid-drag, since none of these move while a card is in the hand.
+  useEffect(() => {
+    setNodes(buildNodes(items, parents, focus));
+  }, [items, parents, focus, setNodes]);
 
-  // The `fitView` prop alone does not survive the first paint here — the nodes
-  // are not measured yet when it fires, so the map lands at the origin,
-  // off-screen. Fit once the nodes have real sizes instead.
+  // The `fitView` prop alone does not survive the first paint here — nodes are
+  // not measured yet when it fires. Fit once they have real sizes, and again
+  // whenever the depth changes.
   const nodesReady = useNodesInitialized();
   const hasFitted = useRef(false);
   useEffect(() => {
@@ -104,190 +190,193 @@ function WorldMapCanvas() {
     }
   }, [nodesReady, fitView]);
 
-  const rename = useCallback(
-    (id: string, label: string) => {
-      setNodes((ns) => ns.map((n) => (n.id === id ? { ...n, data: { ...n.data, label } } : n)));
-    },
-    [setNodes],
-  );
-  const stopEditing = useCallback(() => setEditingId(null), []);
+  useEffect(() => {
+    const t = setTimeout(() => fitView({ padding: 0.22, duration: 400 }), 40);
+    return () => clearTimeout(t);
+  }, [trail, fitView]);
 
-  const descendantsOf = useCallback(
-    (id: string, parentMap: Record<string, string | null>) => {
-      const out = new Set<string>([id]);
-      let grew = true;
-      while (grew) {
-        grew = false;
-        for (const [child, parent] of Object.entries(parentMap)) {
-          if (parent && out.has(parent) && !out.has(child)) {
-            out.add(child);
-            grew = true;
-          }
-        }
-      }
-      return out;
-    },
-    [],
-  );
+  const rename = useCallback((id: string, label: string) => {
+    setItems((prev) => (prev[id] ? { ...prev, [id]: { ...prev[id], label } } : prev));
+  }, []);
+  const stopEditing = useCallback(() => setEditingId(null), []);
 
   /** Which card is this one being held over? Nearest overlapping centre wins. */
   const hitTest = useCallback(
     (dragged: MapNode, all: MapNode[]) => {
       const banned = descendantsOf(dragged.id, parents);
-      const isWorldDragged = dragged.data.kind === 'world';
-      const from = toCentre(dragged.position, isWorldDragged);
+      const from = toCentre(dragged.position, sizeOf(dragged.data));
       let best: { id: string; d: number } | null = null;
 
       for (const n of all) {
-        if (banned.has(n.id)) continue;
-        const isWorld = n.data.kind === 'world';
-        const to = toCentre(n.position, isWorld);
+        if (n.id === dragged.id || banned.has(resolveTarget(n.id))) continue;
+        const to = toCentre(n.position, sizeOf(n.data));
         const d = Math.hypot(to.x - from.x, to.y - from.y);
-        const reach = (sizeOf(isWorld) / 2 + sizeOf(isWorldDragged) / 2) * 0.85;
+        const reach = (sizeOf(n.data) / 2 + sizeOf(dragged.data) / 2) * 0.85;
         if (d < reach && (!best || d < best.d)) best = { id: n.id, d };
       }
       return best?.id ?? null;
     },
-    [descendantsOf, parents],
+    [parents],
   );
+
+  // A drag that ends on top of the card being dragged also fires a DOM click,
+  // which would otherwise read as "go into this" the instant you place it.
+  const didDrag = useRef(false);
 
   const onNodeDrag = useCallback(
     (_: unknown, node: MapNode) => {
-      const target = hitTest(node, nodes);
-      setNodes((ns) =>
-        ns.map((n) =>
-          n.data.dropTarget === (n.id === target)
-            ? n
-            : { ...n, data: { ...n.data, dropTarget: n.id === target } },
-        ),
-      );
+      didDrag.current = true;
+      setDropTargetId(hitTest(node, nodes));
     },
-    [hitTest, nodes, setNodes],
+    [hitTest, nodes],
   );
 
   const onNodeDragStop = useCallback(
     (_: unknown, node: MapNode) => {
+      setDropTargetId(null);
+      setTimeout(() => (didDrag.current = false), 0);
       const target = hitTest(node, nodes);
       // Dropped on a card: it belongs to that card now.
       // Dropped on empty canvas: it belongs to nothing, and stays where it fell.
-      const nextParents = { ...parents, [node.id]: target };
-      setParents(nextParents);
-      setNodes((ns) =>
-        applyLayout(
-          ns.map((n) => (n.data.dropTarget ? { ...n, data: { ...n.data, dropTarget: false } } : n)),
-          nextParents,
-        ),
-      );
+      const parent = target ? resolveTarget(target) : null;
+      setParents((prev) => ({ ...prev, [node.id]: parent }));
+      if (!parent) {
+        setItems((prev) => ({
+          ...prev,
+          [node.id]: { ...prev[node.id], x: node.position.x, y: node.position.y },
+        }));
+      }
     },
-    [hitTest, nodes, parents, setNodes],
+    [hitTest, nodes],
+  );
+
+  // Click the middle to rename it. Click anything else to go into it.
+  const onNodeClick: NodeMouseHandler = useCallback(
+    (_, node) => {
+      if (didDrag.current) return;
+      if (node.id === focus) {
+        if (!parseGroup(node.id)) setEditingId(node.id);
+        return;
+      }
+      setEditingId(null);
+      setTrail((t) => [...t, node.id]);
+    },
+    [focus],
   );
 
   const addCard = useCallback(
     (kind: Kind) => {
       const slot = addCount.current++ % 6;
-      const at = screenToFlowPosition({ x: 120, y: 180 + slot * 46 });
+      const at = screenToFlowPosition({ x: 130, y: 220 + slot * 44 });
       const id = `n-${nextId++}`;
-      setParents((p) => ({ ...p, [id]: null }));
-      setNodes((ns) => [
-        ...ns,
-        {
-          id,
-          type: 'circle' as const,
-          position: at,
-          draggable: true,
-          style: { width: sizeOf(false), height: sizeOf(false) },
-          data: {
-            label: kind === 'event' ? 'New event' : 'New object',
-            kind,
-            attached: false,
-            dropTarget: false,
-            editing: false,
-            onRename: () => {},
-            onEditDone: () => {},
-          } as MapNodeData,
-        },
-      ]);
+      setItems((prev) => ({
+        ...prev,
+        [id]: { id, label: kind === 'event' ? 'New event' : 'New object', kind, x: at.x, y: at.y },
+      }));
+      setParents((prev) => ({ ...prev, [id]: null }));
       setEditingId(id);
     },
-    [screenToFlowPosition, setNodes],
+    [screenToFlowPosition],
   );
-
-  const onNodeDoubleClick: NodeMouseHandler = useCallback((_, node) => setEditingId(node.id), []);
 
   const edges: Edge[] = useMemo(
     () =>
-      Object.entries(parents)
-        .filter(([, parent]) => parent)
-        .map(([child, parent]) => ({
-          id: `${parent}->${child}`,
-          source: parent as string,
-          target: child,
+      nodes
+        .filter((n) => n.data.role === 'ring')
+        .map((n) => ({
+          id: `${focus}->${n.id}`,
+          source: focus,
+          target: n.id,
           type: 'straight',
-          style: { stroke: 'rgba(226, 214, 190, 0.32)', strokeWidth: 1.5 },
+          style: { stroke: 'rgba(226, 214, 190, 0.3)', strokeWidth: 1.5 },
         })),
-    [parents],
+    [nodes, focus],
   );
 
-  // Handlers and the editing flag are stitched in here so the node data the
-  // canvas holds stays plain.
   const renderNodes = useMemo(
     () =>
       nodes.map((n) => ({
         ...n,
-        data: { ...n.data, editing: n.id === editingId, onRename: rename, onEditDone: stopEditing },
+        data: {
+          ...n.data,
+          editing: n.id === editingId,
+          dropTarget: n.id === dropTargetId,
+          onRename: rename,
+          onEditDone: stopEditing,
+        },
       })),
-    [nodes, editingId, rename, stopEditing],
+    [nodes, editingId, dropTargetId, rename, stopEditing],
   );
 
-  const unplaced = nodes.filter((n) => n.data.kind !== 'world' && !parents[n.id]).length;
+  const unplaced = Object.values(items).filter(
+    (i) => i.kind !== 'world' && !parents[i.id],
+  ).length;
+  const ringCount = nodes.filter((n) => n.data.role === 'ring').length;
 
   return (
-    <ReactFlow
-      nodes={renderNodes}
-      edges={edges}
-      nodeTypes={nodeTypes}
-      onNodesChange={onNodesChange}
-      onNodeDrag={onNodeDrag}
-      onNodeDragStop={onNodeDragStop}
-      onNodeDoubleClick={onNodeDoubleClick}
-      nodesConnectable={false}
-      elementsSelectable
-      minZoom={0.2}
-      maxZoom={2}
-      fitView
-      fitViewOptions={{ padding: 0.25 }}
-      proOptions={{ hideAttribution: false }}
-    >
-      <Background variant={BackgroundVariant.Dots} gap={26} size={1} color="#2b3040" />
-      <Controls showInteractive={false} />
+    // Sized inline as well as in CSS: in dev the stylesheet arrives after the
+    // first render, and React Flow refuses to measure anything inside a
+    // zero-sized container.
+    <div className="world-map-root" style={{ position: 'fixed', inset: 0 }}>
+      <ReactFlow
+        nodes={renderNodes}
+        edges={edges}
+        nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
+        onNodeDrag={onNodeDrag}
+        onNodeDragStop={onNodeDragStop}
+        onNodeClick={onNodeClick}
+        nodeDragThreshold={5}
+        nodesConnectable={false}
+        minZoom={0.2}
+        maxZoom={2}
+        fitView
+        fitViewOptions={{ padding: 0.22 }}
+      >
+        <Background variant={BackgroundVariant.Dots} gap={26} size={1} color="#2b3040" />
+        <Controls showInteractive={false} />
 
-      <Panel position="top-left" className="toolbar">
-        <div className="toolbar-title">World map</div>
-        <div className="toolbar-hint">
-          Drag a card onto another to make it belong there. Drop it on empty space to take it
-          out again. Double-click to rename.
-        </div>
-        <div className="toolbar-actions">
-          <button onClick={() => addCard('event')}>+ Event</button>
-          <button onClick={() => addCard('object')}>+ Object</button>
-        </div>
-        <div className="toolbar-count">
-          {unplaced === 0 ? 'Everything is placed' : `${unplaced} not yet placed`}
-        </div>
-      </Panel>
-    </ReactFlow>
+        <Panel position="top-center" className="breadcrumb">
+          {trail.map((id, i) => (
+            <span key={id}>
+              {i > 0 && <span className="crumb-sep">›</span>}
+              <button
+                className={i === trail.length - 1 ? 'crumb here' : 'crumb'}
+                onClick={() => setTrail((t) => t.slice(0, i + 1))}
+              >
+                {labelOf(id, items)}
+              </button>
+            </span>
+          ))}
+        </Panel>
+
+        <Panel position="top-left" className="toolbar">
+          <div className="toolbar-title">World map</div>
+          <div className="toolbar-hint">
+            Drag a card onto another to make it belong there. Drop it on empty space to take it
+            out again. Click a card to go into it; click the middle one to rename it.
+          </div>
+          <div className="toolbar-actions">
+            <button onClick={() => addCard('event')}>+ Event</button>
+            <button onClick={() => addCard('object')}>+ Object</button>
+          </div>
+          <div className="toolbar-count">
+            {ringCount === 0
+              ? `Nothing belongs to ${labelOf(focus, items)} yet`
+              : unplaced === 0
+                ? 'Everything is placed'
+                : `${unplaced} not yet placed`}
+          </div>
+        </Panel>
+      </ReactFlow>
+    </div>
   );
 }
 
 export function WorldMap() {
   return (
-    // Sized inline as well as in CSS: in dev the stylesheet arrives after the
-    // first render, and React Flow refuses to measure anything inside a
-    // zero-sized container — the nodes stay `visibility: hidden` for good.
-    <div className="world-map-root" style={{ position: 'fixed', inset: 0 }}>
-      <ReactFlowProvider>
-        <WorldMapCanvas />
-      </ReactFlowProvider>
-    </div>
+    <ReactFlowProvider>
+      <WorldMapCanvas />
+    </ReactFlowProvider>
   );
 }
