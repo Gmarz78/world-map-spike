@@ -145,6 +145,25 @@ export function subtitleFor(id: string, items: Items, parents: Parents): string 
 export const kindOf = (id: string, items: Items): Kind =>
   parseGroup(id)?.kind ?? items[id]?.kind ?? 'object';
 
+/**
+ * The way down to a card from the world: every card and the category it was
+ * reached through. What the breadcrumb would have been had you clicked your way
+ * there, which is what another view needs to hand something over to the map.
+ */
+export function trailTo(id: string, items: Items, parents: Parents): string[] {
+  const chain: string[] = [];
+  let cursor: string | undefined = id;
+
+  while (cursor && items[cursor]) {
+    chain.unshift(cursor);
+    const parent: string | null = parents[cursor] ?? null;
+    if (!parent) break;
+    chain.unshift(groupId(parent, items[cursor].kind));
+    cursor = parent;
+  }
+  return chain;
+}
+
 /** Everything at or under `id`, so nothing can be dropped inside itself. */
 export function descendantsOf(id: string, parents: Parents) {
   const out = new Set<string>([id]);

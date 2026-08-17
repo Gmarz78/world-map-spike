@@ -317,6 +317,138 @@
   font-size: 12px;
 }
 
+/* --- the view switch ---------------------------------------------------- */
+
+.view-switch {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 10;
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  background: rgba(16, 19, 26, 0.86);
+  border: 1px solid rgba(232, 226, 214, 0.12);
+  backdrop-filter: blur(8px);
+}
+
+.view-switch button {
+  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  font-size: 12.5px;
+  letter-spacing: 0.04em;
+  color: rgba(232, 226, 214, 0.55);
+  background: none;
+  border: none;
+  padding: 5px 15px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.view-switch button:hover {
+  color: #f3d492;
+}
+.view-switch button.on {
+  color: #f3d492;
+  background: rgba(232, 226, 214, 0.09);
+}
+
+/* --- timeline ----------------------------------------------------------- */
+
+/* The same world read as a sequence. Same ground, same cards, same colours —
+   only the arrangement changes, so switching views does not feel like
+   switching applications. */
+.timeline {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 44px;
+}
+
+.timeline-head {
+  text-align: center;
+  padding: 0 24px;
+}
+.timeline-head h1 {
+  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  font-size: 30px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: #f3d492;
+  margin: 0 0 6px;
+}
+.timeline-head p {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  color: rgba(232, 226, 214, 0.45);
+}
+
+.timeline-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 max(48px, 8vw);
+}
+
+.timeline-track {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 74px;
+  width: max-content;
+  min-width: 100%;
+  justify-content: center;
+  padding: 4px 0 8px;
+}
+
+/* One line, running behind the cards at their middle. */
+.timeline-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 84px;
+  height: 1.5px;
+  background: rgba(226, 214, 190, 0.3);
+}
+
+.timeline-stop {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.timeline-ordinal {
+  font-size: 10.5px;
+  letter-spacing: 0.16em;
+  color: rgba(232, 226, 214, 0.35);
+}
+
+/* The card is the map's card, unchanged, so the two views share a vocabulary. */
+.timeline-stop .circle-node {
+  width: 116px;
+  height: 116px;
+  cursor: pointer;
+}
+.timeline-stop:hover .circle-node {
+  transform: translateY(-3px);
+}
+
+.timeline-of {
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: rgba(232, 226, 214, 0.35);
+  min-height: 14px;
+}
+
 /* --- toolbar ------------------------------------------------------------ */
 
 .toolbar {

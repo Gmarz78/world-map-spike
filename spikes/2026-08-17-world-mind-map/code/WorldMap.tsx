@@ -1,4 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type Dispatch,
+  type SetStateAction,
+} from 'react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -15,6 +23,7 @@ import {
 import '@xyflow/react/dist/style.css';
 
 import { CircleNode, type MapNode, type MapNodeData, type Role } from './CircleNode';
+import { Timeline } from './Timeline';
 import {
   addSlotId,
   badgesFor,
@@ -27,6 +36,7 @@ import {
   resolveTarget,
   ringEntries,
   subtitleFor,
+  trailTo,
   type Badge,
   type Item,
   type Items,
@@ -200,29 +210,27 @@ let nextId = 1;
 
 // ---------------------------------------------------------------------------
 
-function WorldMapCanvas() {
+/** The world itself is held one level up, so both views read the same one. */
+type WorldState = {
+  items: Items;
+  setItems: Dispatch<SetStateAction<Items>>;
+  parents: Parents;
+  setParents: Dispatch<SetStateAction<Parents>>;
+  trail: string[];
+  setTrail: Dispatch<SetStateAction<string[]>>;
+};
+
+function WorldMapCanvas({ items, setItems, parents, setParents, trail, setTrail }: WorldState) {
   const { fitView } = useReactFlow();
 
-  const [items, setItems] = useState<Items>(() =>
-    Object.fromEntries(SEED_ITEMS.map((i) => [i.id, i])),
-  );
-  const [parents, setParents] = useState<Parents>(SEED_PARENTS);
-  const [trail, setTrail] = useState<string[]>([WORLD_ID]);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [dropTargetId, setDropTargetId] = useState<string | null>(null);
 
   const focus = trail[trail.length - 1];
 
   const [nodes, setNodes, onNodesChange] = useNodesState<MapNode>(
-    useMemo(
-      () =>
-        buildNodes(
-          Object.fromEntries(SEED_ITEMS.map((i) => [i.id, i])),
-          SEED_PARENTS,
-          WORLD_ID,
-        ),
-      [],
-    ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- first paint only
+    useMemo(() => buildNodes(items, parents, focus), []),
   );
 
   // A card that has just been named: where it was drafted, so it can be seen
@@ -445,11 +453,7 @@ function WorldMapCanvas() {
   );
 
   return (
-    // Sized inline as well as in CSS: in dev the stylesheet arrives after the
-    // first render, and React Flow refuses to measure anything inside a
-    // zero-sized container.
-    <div className="world-map-root" style={{ position: 'fixed', inset: 0 }}>
-      <ReactFlow
+    <ReactFlow
         nodes={renderNodes}
         edges={edges}
         nodeTypes={nodeTypes}
@@ -498,15 +502,52 @@ function WorldMapCanvas() {
               : `Nothing belongs to ${labelOf(focus, items)} yet`}
           </div>
         </Panel>
-      </ReactFlow>
-    </div>
+    </ReactFlow>
   );
 }
 
 export function WorldMap() {
+  const [items, setItems] = useState<Items>(() =>
+    Object.fromEntries(SEED_ITEMS.map((i) => [i.id, i])),
+  );
+  const [parents, setParents] = useState<Parents>(SEED_PARENTS);
+  const [trail, setTrail] = useState<string[]>([WORLD_ID]);
+  const [view, setView] = useState<'map' | 'timeline'>('map');
+
+  const world = { items, setItems, parents, setParents, trail, setTrail };
+
   return (
-    <ReactFlowProvider>
-      <WorldMapCanvas />
-    </ReactFlowProvider>
+    // Sized inline as well as in CSS: in dev the stylesheet arrives after the
+    // first render, and React Flow refuses to measure anything inside a
+    // zero-sized container.
+    <div className="world-map-root" style={{ position: 'fixed', inset: 0 }}>
+      <div className="view-switch">
+        <button className={view === 'map' ? 'on' : ''} onClick={() => setView('map')}>
+          Map
+        </button>
+        <button className={view === 'timeline' ? 'on' : ''} onClick={() => setView('timeline')}>
+          Timeline
+        </button>
+      </div>
+
+      {view === 'map' ? (
+        // The world is held above the provider, so switching views costs
+        // nothing but the pan and zoom.
+        <ReactFlowProvider>
+          <WorldMapCanvas {...world} />
+        </ReactFlowProvider>
+      ) : (
+        <Timeline
+          items={items}
+          parents={parents}
+          worldId={WORLD_ID}
+          onOpen={(id) => {
+            // Handing a card to the map: it opens exactly where that card lives.
+            setTrail(trailTo(id, items, parents));
+            setView('map');
+          }}
+        />
+      )}
+    </div>
   );
 }

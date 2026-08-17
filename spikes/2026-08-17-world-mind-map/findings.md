@@ -191,6 +191,29 @@ that you did not do with your own hand.
 **Confidence:** proven that it builds; assumed for the timing, which has not
 been watched (still no frames in the pane).
 
+## 2026-08-17 — A second view, in the same language
+
+**Tried:** a timeline of the world's events beside the map, sharing its colours,
+its ground and — literally — its cards.
+**Happened:** the two views cost almost nothing to hold together because the
+timeline reuses the map's card markup and CSS classes rather than restating
+them, so an event looks identical in both. What it did force was lifting the
+world out of the map component: `items`, `parents` and `trail` now live one
+level up and are passed down, since two views cannot each own the world.
+Switching views costs nothing but the pan and zoom.
+
+The join between them is `trailTo`: given any card it works out the path down
+to it — `Aetheria › Events › Siege of Ravenhold` — so clicking an event on the
+timeline opens it in the map at exactly the depth it lives, rather than dumping
+you at the top.
+
+**Means:** the map's hierarchy and the timeline's sequence are two readings of
+one set of relationships, with no second model behind the second view. The cost
+is that the timeline can only *draw* an order: sequence is the order things were
+written down, and there is no gesture for changing it.
+**Confidence:** proven for `trailTo` (three assertions, including a card two
+levels down); assumed for everything visual.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:

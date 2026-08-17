@@ -2,6 +2,11 @@
 
 ## Screens
 
+Two views of one world, switched by a pill at the top right: **Map** and
+**Timeline**. The world itself is held above both, so switching costs nothing
+but the pan and zoom — the same cards, the same names, the same relationships,
+read two ways.
+
 ### World map
 **Purpose:** see what the world is made of, one level at a time, and say what
 belongs to what by moving it there.
@@ -31,6 +36,29 @@ belongs to what by moving it there.
 
 **Reached from:** it is the whole app.
 **Leads to:** itself, one level down.
+
+### Timeline
+**Purpose:** read the same world as a sequence rather than a hierarchy —
+everything that happens in it, one after another.
+
+**Contains:**
+- The **world's name** and a line beneath it: `Everything that happens, in
+  order — 4 so far`.
+- **One card per event**, in a row, on a single horizontal line that runs behind
+  them at their middle. They are the map's cards, unchanged: same size as a ring
+  card, same blue, same kind tag, same rim badges saying what each event holds.
+- An **ordinal** above each — 1, 2, 3 — and, beneath any event that belongs to
+  another event rather than to the world, `during <that event>`.
+- It scrolls sideways when the story outgrows the screen.
+
+**Reached from:** the view switch.
+**Leads to:** the map. Clicking an event opens it there, at exactly the depth it
+lives — `Aetheria › Events › Siege of Ravenhold`, worked out from what it
+belongs to.
+
+**Deliberately flat.** No dates, no lengths, no gaps, no acts or chapters.
+A card's position means *after the one before it* and nothing else. Order is the
+order things were written down.
 
 ## Navigation
 
@@ -216,4 +244,11 @@ Consequences, all deliberate:
 - **What is a relationship between two objects?** The map only expresses
   belonging. "The Ember Crown was lost at the Siege" and "the Crown belongs to
   the Siege" are not the same claim, and only the second can be drawn.
+- **The timeline cannot be rearranged.** It draws an order it has no way to
+  change: sequence is insertion order, and there is no gesture for moving an
+  event earlier or later. For a spike about arranging things by hand, that is
+  the obvious next thing to try.
+- **The timeline is flat, the map is not.** An event belonging to another event
+  sits in the row like any other, with a small `during …` beneath it. Whether
+  nesting should show as position, indentation, or not at all is open.
 - **Nothing is saved.** Reload and the world resets to Aetheria.
