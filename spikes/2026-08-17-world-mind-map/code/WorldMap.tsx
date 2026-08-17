@@ -21,6 +21,8 @@ import {
   type NodeMouseHandler,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
+// Inter, bundled rather than fetched — the spike stays runnable offline.
+import '@fontsource-variable/inter';
 
 import { CircleNode, type MapNode, type MapNodeData, type Role } from './CircleNode';
 import { Timeline } from './Timeline';
@@ -440,7 +442,7 @@ function WorldMapCanvas({ items, setItems, parents, setParents, trail, setTrail 
           source: focus,
           target: n.id,
           type: 'straight',
-          style: { stroke: 'rgba(226, 214, 190, 0.3)', strokeWidth: 1.5 },
+          style: { stroke: 'rgba(231, 233, 236, 0.28)', strokeWidth: 1.5 },
         })),
     [nodes, focus],
   );
@@ -483,7 +485,7 @@ function WorldMapCanvas({ items, setItems, parents, setParents, trail, setTrail 
         fitView
         fitViewOptions={{ padding: 0.22 }}
       >
-        <Background variant={BackgroundVariant.Dots} gap={26} size={1} color="#2b3040" />
+        <Background variant={BackgroundVariant.Dots} gap={26} size={1} color="#2e3136" />
         <Controls showInteractive={false} />
 
         <Panel position="top-center" className="breadcrumb">

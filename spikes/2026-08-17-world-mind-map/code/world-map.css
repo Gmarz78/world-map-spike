@@ -1,7 +1,32 @@
+/* One typeface throughout, and one neutral ink.
+ *
+ * The palette used to be warm — gold, amber, a beige off-white — which read as
+ * parchment. It is greys now, so the only colour left in the whole thing is the
+ * colour that means something: blue for an event, green for an object. */
+:root {
+  --font:
+    'Inter Variable', 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+
+  --ink: #e7e9ec;
+  --ink-bright: #f4f6f8;
+  --ink-soft: rgba(231, 233, 236, 0.55);
+  --ink-faint: rgba(231, 233, 236, 0.38);
+  --ink-ghost: rgba(231, 233, 236, 0.12);
+
+  --line: rgba(231, 233, 236, 0.28);
+  --panel: rgba(22, 24, 27, 0.86);
+  --panel-line: rgba(231, 233, 236, 0.12);
+
+  --world-edge: #9ba2aa;
+  --held: rgba(226, 232, 238, 0.32);
+}
+
 .world-map-root {
-  background: radial-gradient(1100px 800px at 50% 45%, #1a2030 0%, #0e1118 70%);
-  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-  color: #e8e2d6;
+  background: radial-gradient(1100px 800px at 50% 45%, #212429 0%, #0f1113 70%);
+  font-family: var(--font);
+  font-feature-settings: 'cv05' 1;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
 }
 
 /* React Flow paints its own chrome on nodes; the circles are the whole point,
@@ -55,18 +80,19 @@
 }
 
 .circle-node .label {
-  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   font-size: 14px;
+  font-weight: 500;
   line-height: 1.2;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.006em;
   overflow-wrap: anywhere;
 }
 
 .circle-node .kind-tag {
   font-size: 8.5px;
+  font-weight: 500;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  opacity: 0.55;
+  opacity: 0.5;
 }
 
 /* --- badges: what a card holds, worn on its rim ------------------------- */
@@ -98,6 +124,7 @@
 
 .badge-count {
   font-size: 12px;
+  font-weight: 500;
 }
 
 .badge-event {
@@ -128,14 +155,14 @@
   transform: translate(-50%, -50%) scale(1.06);
 }
 .badges-open .badge-label {
-  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   font-size: 15px;
+  font-weight: 550;
   line-height: 1;
-  letter-spacing: 0.02em;
+  letter-spacing: -0.012em;
 }
 .badges-open .badge-count {
   font-size: 13px;
-  opacity: 0.62;
+  opacity: 0.6;
 }
 
 .circle-node .label-input {
@@ -157,11 +184,11 @@
   box-shadow: 0 22px 50px rgba(0, 0, 0, 0.55);
 }
 .kind-world .card-face {
-  background: radial-gradient(circle at 38% 32%, #3a2f1c 0%, #241d12 72%);
-  border: 2px solid #d9a441;
+  background: radial-gradient(circle at 38% 32%, #363a40 0%, #202327 72%);
+  border: 2px solid var(--world-edge);
 }
 .kind-world .label {
-  color: #f3d492;
+  color: var(--ink-bright);
 }
 
 .kind-event .card-face {
@@ -184,7 +211,8 @@
 }
 .role-centre .label {
   font-size: 20px;
-  letter-spacing: 0.02em;
+  font-weight: 550;
+  letter-spacing: -0.018em;
 }
 
 /* What this thing is, and whose — only ever on the card in the middle. */
@@ -193,12 +221,12 @@
   max-width: 80%;
   font-size: 11.5px;
   line-height: 1.4;
-  letter-spacing: 0.015em;
+  letter-spacing: -0.002em;
   text-wrap: balance;
-  color: rgba(232, 226, 214, 0.45);
+  color: var(--ink-faint);
 }
 .kind-world .subtitle {
-  color: rgba(243, 212, 146, 0.5);
+  color: rgba(231, 233, 236, 0.45);
 }
 
 .role-ring {
@@ -222,15 +250,15 @@
 .circle-node.drop-target {
   transform: scale(1.08);
   box-shadow:
-    0 0 0 4px rgba(243, 212, 146, 0.35),
-    0 0 34px rgba(243, 212, 146, 0.25);
+    0 0 0 4px var(--held),
+    0 0 34px rgba(226, 232, 238, 0.2);
 }
 .circle-node.drop-target .card-face {
   border-style: solid;
 }
 
 .circle-node.is-selected .card-face {
-  box-shadow: inset 0 0 0 1px rgba(232, 226, 214, 0.4);
+  box-shadow: inset 0 0 0 1px rgba(231, 233, 236, 0.4);
 }
 
 /* --- the empty slot at the end of a ring -------------------------------- */
@@ -240,7 +268,7 @@
   opacity: 1;
 }
 .is-add .card-face {
-  background: rgba(232, 226, 214, 0.02);
+  background: rgba(231, 233, 236, 0.02);
   border-style: dashed;
   opacity: 0.5;
   transition:
@@ -250,20 +278,21 @@
 }
 .is-add:hover .card-face {
   opacity: 1;
-  background: rgba(232, 226, 214, 0.07);
+  background: rgba(231, 233, 236, 0.07);
 }
 .is-add:hover {
   transform: scale(1.04);
 }
 .is-add .plus {
   font-size: 27px;
+  font-weight: 300;
   line-height: 0.8;
   opacity: 0.75;
 }
 .is-add .label {
-  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   font-size: 11.5px;
-  letter-spacing: 0.04em;
+  font-weight: 450;
+  letter-spacing: 0.02em;
 }
 
 /* --- groups: more than one of a kind ------------------------------------ */
@@ -272,7 +301,8 @@
    many, so drawing it twice was saying it twice. */
 .is-group .label {
   font-size: 15px;
-  letter-spacing: 0.03em;
+  font-weight: 550;
+  letter-spacing: -0.008em;
 }
 .is-group.role-centre .label {
   font-size: 21px;
@@ -289,31 +319,34 @@
   gap: 2px;
   padding: 7px 12px;
   border-radius: 999px;
-  background: rgba(16, 19, 26, 0.86);
-  border: 1px solid rgba(232, 226, 214, 0.12);
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
   backdrop-filter: blur(8px);
 }
 
 .crumb {
-  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  font-size: 13px;
-  color: rgba(232, 226, 214, 0.55);
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 450;
+  letter-spacing: -0.004em;
+  color: var(--ink-soft);
   background: none;
   border: none;
-  padding: 2px 6px;
+  padding: 3px 7px;
   cursor: pointer;
-  border-radius: 6px;
+  border-radius: 7px;
 }
 .crumb:hover {
-  color: #f3d492;
-  background: rgba(232, 226, 214, 0.07);
+  color: var(--ink-bright);
+  background: rgba(231, 233, 236, 0.07);
 }
 .crumb.here {
-  color: #f3d492;
+  color: var(--ink-bright);
+  font-weight: 550;
   cursor: default;
 }
 .crumb-sep {
-  color: rgba(232, 226, 214, 0.3);
+  color: rgba(231, 233, 236, 0.3);
   font-size: 12px;
 }
 
@@ -328,16 +361,17 @@
   gap: 2px;
   padding: 4px;
   border-radius: 999px;
-  background: rgba(16, 19, 26, 0.86);
-  border: 1px solid rgba(232, 226, 214, 0.12);
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
   backdrop-filter: blur(8px);
 }
 
 .view-switch button {
-  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  font-size: 12.5px;
-  letter-spacing: 0.04em;
-  color: rgba(232, 226, 214, 0.55);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.002em;
+  color: var(--ink-soft);
   background: none;
   border: none;
   padding: 5px 15px;
@@ -345,11 +379,11 @@
   cursor: pointer;
 }
 .view-switch button:hover {
-  color: #f3d492;
+  color: var(--ink-bright);
 }
 .view-switch button.on {
-  color: #f3d492;
-  background: rgba(232, 226, 214, 0.09);
+  color: var(--ink-bright);
+  background: rgba(231, 233, 236, 0.09);
 }
 
 /* --- timeline ----------------------------------------------------------- */
@@ -371,18 +405,17 @@
   padding: 0 24px;
 }
 .timeline-head h1 {
-  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   font-size: 30px;
-  font-weight: 400;
-  letter-spacing: 0.02em;
-  color: #f3d492;
+  font-weight: 600;
+  letter-spacing: -0.028em;
+  color: var(--ink-bright);
   margin: 0 0 6px;
 }
 .timeline-head p {
   margin: 0;
   font-size: 12px;
-  letter-spacing: 0.02em;
-  color: rgba(232, 226, 214, 0.45);
+  letter-spacing: -0.002em;
+  color: var(--ink-faint);
 }
 
 .timeline-controls {
@@ -401,18 +434,22 @@
   gap: 8px;
   padding: 4px 6px 4px 14px;
   border-radius: 999px;
-  background: rgba(16, 19, 26, 0.7);
-  border: 1px solid rgba(232, 226, 214, 0.1);
-  font-size: 11.5px;
-  letter-spacing: 0.05em;
-  color: rgba(232, 226, 214, 0.4);
+  background: rgba(22, 24, 27, 0.7);
+  border: 1px solid rgba(231, 233, 236, 0.1);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
 }
 .subject-select select {
-  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  font-family: inherit;
   font-size: 12.5px;
-  letter-spacing: 0.02em;
-  color: #f3d492;
-  background: rgba(232, 226, 214, 0.08);
+  font-weight: 500;
+  letter-spacing: -0.006em;
+  text-transform: none;
+  color: var(--ink-bright);
+  background: rgba(231, 233, 236, 0.08);
   border: none;
   border-radius: 999px;
   padding: 5px 11px;
@@ -420,8 +457,8 @@
   outline: none;
 }
 .subject-select option {
-  background: #14181f;
-  color: #e8e2d6;
+  background: #16181b;
+  color: var(--ink);
 }
 
 /* What the numbers are called — a property of the world, changed here. */
@@ -430,14 +467,15 @@
   gap: 2px;
   padding: 3px;
   border-radius: 999px;
-  background: rgba(16, 19, 26, 0.7);
-  border: 1px solid rgba(232, 226, 214, 0.1);
+  background: rgba(22, 24, 27, 0.7);
+  border: 1px solid rgba(231, 233, 236, 0.1);
 }
 .scale-switch button {
   font-family: inherit;
   font-size: 11.5px;
-  letter-spacing: 0.05em;
-  color: rgba(232, 226, 214, 0.45);
+  font-weight: 500;
+  letter-spacing: -0.002em;
+  color: var(--ink-faint);
   background: none;
   border: none;
   padding: 4px 13px;
@@ -445,11 +483,11 @@
   cursor: pointer;
 }
 .scale-switch button:hover {
-  color: #e8e2d6;
+  color: var(--ink);
 }
 .scale-switch button.on {
-  color: #f3d492;
-  background: rgba(232, 226, 214, 0.08);
+  color: var(--ink-bright);
+  background: rgba(231, 233, 236, 0.08);
 }
 
 .timeline-body {
@@ -473,7 +511,7 @@
 
 .axis-line {
   height: 1px;
-  background: rgba(226, 214, 190, 0.28);
+  background: var(--line);
 }
 
 .axis-tick {
@@ -488,13 +526,15 @@
 .axis-rule {
   width: 1px;
   height: 7px;
-  background: rgba(226, 214, 190, 0.28);
+  background: var(--line);
 }
 .axis-label {
   font-size: 10.5px;
-  letter-spacing: 0.06em;
+  font-weight: 450;
+  letter-spacing: 0.03em;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  color: rgba(232, 226, 214, 0.38);
+  color: var(--ink-faint);
 }
 
 /* --- lanes and bars ----------------------------------------------------- */
@@ -503,7 +543,7 @@
    axis cannot share a row — that, and only that, is what makes a second lane. */
 .lanes {
   position: relative;
-  border-top: 1px solid rgba(226, 214, 190, 0.16);
+  border-top: 1px solid rgba(231, 233, 236, 0.16);
   padding-top: 14px;
   margin-top: 2px;
 }
@@ -543,7 +583,7 @@
   box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
 }
 .bar.held > .bar-face {
-  box-shadow: 0 0 0 3px rgba(243, 212, 146, 0.28);
+  box-shadow: 0 0 0 3px var(--held);
 }
 
 /* Somewhere to take hold of each end. */
@@ -565,7 +605,7 @@
   border-radius: 0 13px 13px 0;
 }
 .bar:hover .grip {
-  background: linear-gradient(180deg, rgba(243, 212, 146, 0.16), rgba(243, 212, 146, 0.08));
+  background: linear-gradient(180deg, rgba(231, 233, 236, 0.16), rgba(231, 233, 236, 0.06));
 }
 
 /* The same fill and border as the card of the same kind, squared off. */
@@ -592,16 +632,18 @@
 }
 
 .bar-label {
-  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
   font-size: 14px;
+  font-weight: 550;
   line-height: 1.15;
+  letter-spacing: -0.012em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 .bar-when {
   font-size: 10.5px;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -651,8 +693,9 @@
 }
 .pin-card .label {
   font-size: 11px;
+  font-weight: 500;
   line-height: 1.25;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.005em;
   font-variant-numeric: tabular-nums;
 }
 .pin-card:hover {
@@ -666,7 +709,7 @@
   transform: none;
 }
 .pin-card.held .card-face {
-  box-shadow: 0 0 0 3px rgba(243, 212, 146, 0.3);
+  box-shadow: 0 0 0 3px var(--held);
 }
 
 /* A few pixels clear of the circle, reaching to the line. */
@@ -700,8 +743,8 @@
   text-align: center;
   font-size: 11.5px;
   line-height: 1.5;
-  letter-spacing: 0.02em;
-  color: rgba(232, 226, 214, 0.32);
+  letter-spacing: -0.002em;
+  color: rgba(231, 233, 236, 0.32);
 }
 
 /* --- toolbar ------------------------------------------------------------ */
@@ -710,23 +753,24 @@
   width: 240px;
   padding: 14px 16px;
   border-radius: 12px;
-  background: rgba(16, 19, 26, 0.86);
-  border: 1px solid rgba(232, 226, 214, 0.12);
+  background: var(--panel);
+  border: 1px solid var(--panel-line);
   backdrop-filter: blur(8px);
 }
 
 .toolbar-title {
-  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
-  font-size: 15px;
-  letter-spacing: 0.04em;
-  color: #f3d492;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.014em;
+  color: var(--ink-bright);
   margin-bottom: 6px;
 }
 
 .toolbar-hint {
   font-size: 11.5px;
   line-height: 1.45;
-  color: rgba(232, 226, 214, 0.6);
+  letter-spacing: -0.002em;
+  color: var(--ink-soft);
   margin-bottom: 12px;
 }
 
@@ -739,31 +783,32 @@
   flex: 1;
   padding: 7px 0;
   font-size: 12px;
+  font-weight: 500;
   font-family: inherit;
-  color: #e8e2d6;
-  background: rgba(232, 226, 214, 0.08);
-  border: 1px solid rgba(232, 226, 214, 0.18);
+  color: var(--ink);
+  background: rgba(231, 233, 236, 0.08);
+  border: 1px solid rgba(231, 233, 236, 0.18);
   border-radius: 7px;
   cursor: pointer;
   transition: background 120ms ease;
 }
 .toolbar-actions button:hover {
-  background: rgba(232, 226, 214, 0.16);
+  background: rgba(231, 233, 236, 0.16);
 }
 
 .toolbar-count {
   margin-top: 10px;
   font-size: 11px;
-  letter-spacing: 0.05em;
-  color: rgba(232, 226, 214, 0.42);
+  letter-spacing: 0.02em;
+  color: rgba(231, 233, 236, 0.42);
 }
 
 /* React Flow's own controls, toned down to match. */
 .react-flow__controls-button {
-  background: rgba(16, 19, 26, 0.9);
-  border-bottom: 1px solid rgba(232, 226, 214, 0.12);
-  fill: #e8e2d6;
+  background: rgba(22, 24, 27, 0.9);
+  border-bottom: 1px solid var(--panel-line);
+  fill: var(--ink);
 }
 .react-flow__controls-button:hover {
-  background: rgba(40, 46, 60, 0.95);
+  background: rgba(44, 47, 52, 0.95);
 }

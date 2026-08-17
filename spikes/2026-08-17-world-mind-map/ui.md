@@ -283,10 +283,20 @@ Consequences, all deliberate:
 
 ## Look and feel
 
-- **Dark, warm-lit.** Near-black blue-grey ground with a soft glow behind the
-  centre, so the middle reads as the light source and the eye starts there.
-- **Serif for names, sans for chrome.** Names are the writer's own words and get
-  a book face; labels, counts and buttons stay quiet in a UI sans.
+- **Dark and neutral.** A near-black grey ground with a soft lift behind the
+  centre, so the middle reads as the light source and the eye starts there. It
+  was warm — gold, amber, a beige off-white, which read as parchment — and is
+  now greys throughout. The point of the change: **the only colour left in the
+  whole thing is colour that means something.** Blue is an event, green is an
+  object, and nothing else is tinted, so a coloured thing is always a kind of
+  thing.
+- **One typeface, Inter, at several weights.** Bundled with the app rather than
+  fetched, so the spike still runs with no network. Names take a medium or
+  semibold with slightly negative tracking; chrome stays lighter and smaller.
+  The serif went with the parchment — a book face said "manuscript" where the
+  thing being built is an instrument.
+- **Numbers are tabular** wherever they are read against each other — badges,
+  axis labels, pins, spans — so a digit never shifts as a bar is dragged.
 - **The middle card says what it is; the ring does not.** Only the focused card
   carries a sub-heading, and it drops the small uppercase kind tag that ring
   cards wear, since the sub-heading already says `An event of Aetheria`. In the

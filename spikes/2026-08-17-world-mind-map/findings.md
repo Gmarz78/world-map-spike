@@ -330,6 +330,30 @@ around its middle and the existing packing does the rest, which means the same
 eight lines of code sort both bars and pins. Lanes then alternate above and
 below the line, so a heap opens outwards rather than climbing.
 
+## 2026-08-17 — Greys, and one typeface
+
+**Tried:** replacing every warm colour with a grey, and the serif with a modern
+sans.
+**Happened:** it turned out to be a rule rather than a repaint. With the golds
+and the beige off-white gone, **the only colour left in the whole thing is
+colour that means something** — blue for an event, green for an object. Nothing
+else is tinted, so a coloured thing is always a kind of thing, and the greys
+carry structure instead of competing with it. The palette now lives in eight
+custom properties at the top of the stylesheet rather than being written out
+thirty times.
+
+Inter is **bundled** (`@fontsource-variable/inter`) rather than pulled from a
+CDN, so the spike still runs with no network — worth the one dependency, since
+"a more modern font" answered by a system stack is really "whatever this
+machine happens to have". Being variable, weight does the work the serif used to
+do: names at 550–600 with slightly negative tracking, chrome lighter and
+smaller. Numbers are tabular wherever they are read against each other, so a
+digit never shifts width as a bar is dragged.
+**Means:** the earlier "serif for names, sans for chrome" idea is gone. It said
+*manuscript*, and the thing being built is an instrument.
+**Confidence:** proven that it builds and both suites still pass; assumed for
+how it looks.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:
