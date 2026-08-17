@@ -24,6 +24,7 @@ import '@xyflow/react/dist/style.css';
 
 import { CircleNode, type MapNode, type MapNodeData, type Role } from './CircleNode';
 import { Timeline } from './Timeline';
+import { nextSpan, type Scale } from './axis';
 import {
   addSlotId,
   badgesFor,
@@ -62,10 +63,12 @@ const WORLD_ID = 'world';
 const SEED_ITEMS: Item[] = [
   { id: WORLD_ID, label: 'Aetheria', kind: 'world', x: 0, y: 0 },
 
-  { id: 'e-sundering', label: 'The Sundering', kind: 'event', x: 0, y: 0 },
-  { id: 'e-coronation', label: 'Coronation of Vela', kind: 'event', x: 0, y: 0 },
-  { id: 'e-siege', label: 'Siege of Ravenhold', kind: 'event', x: 0, y: 0 },
-  { id: 'e-winter', label: 'The Long Winter', kind: 'event', x: 0, y: 0 },
+  // Events carry a start and an end. What the numbers are called is the
+  // world's business, not theirs.
+  { id: 'e-sundering', label: 'The Sundering', kind: 'event', x: 0, y: 0, start: 1, end: 14 },
+  { id: 'e-coronation', label: 'Coronation of Vela', kind: 'event', x: 0, y: 0, start: 10, end: 22 },
+  { id: 'e-siege', label: 'Siege of Ravenhold', kind: 'event', x: 0, y: 0, start: 34, end: 68 },
+  { id: 'e-winter', label: 'The Long Winter', kind: 'event', x: 0, y: 0, start: 46, end: 96 },
   { id: 'o-crown', label: 'The Ember Crown', kind: 'object', x: 0, y: 0 },
   { id: 'o-ring', label: "Vela's Ring", kind: 'object', x: 0, y: 0 },
   { id: 'o-ledger', label: 'The Salt Ledger', kind: 'object', x: 0, y: 0 },
@@ -301,7 +304,12 @@ function WorldMapCanvas({ items, setItems, parents, setParents, trail, setTrail 
       const id = `n-${nextId++}`;
       const slot = nodes.find((n) => n.data.isAdd);
 
-      setItems((prev) => ({ ...prev, [id]: { id, label, kind, x: 0, y: 0 } }));
+      setItems((prev) => ({
+        ...prev,
+        // A new event lands just after everything already written; an object
+        // never sits on the axis at all.
+        [id]: { id, label, kind, x: 0, y: 0, ...(kind === 'event' ? nextSpan(prev) : {}) },
+      }));
       setParents((prev) => ({ ...prev, [id]: owner }));
       setArrival({ id, from: slot ? slot.position : { x: 0, y: 0 } });
     },
@@ -513,6 +521,9 @@ export function WorldMap() {
   const [parents, setParents] = useState<Parents>(SEED_PARENTS);
   const [trail, setTrail] = useState<string[]>([WORLD_ID]);
   const [view, setView] = useState<'map' | 'timeline'>('map');
+  // What the numbers on the axis are called. A property of the world, not of
+  // any event on it.
+  const [scale, setScale] = useState<Scale>('pages');
 
   const world = { items, setItems, parents, setParents, trail, setTrail };
 
@@ -541,6 +552,8 @@ export function WorldMap() {
           items={items}
           parents={parents}
           worldId={WORLD_ID}
+          scale={scale}
+          setScale={setScale}
           onOpen={(id) => {
             // Handing a card to the map: it opens exactly where that card lives.
             setTrail(trailTo(id, items, parents));

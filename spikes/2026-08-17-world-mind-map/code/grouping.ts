@@ -13,6 +13,12 @@ export type Item = {
   /** Where it sits when it belongs to nothing. Ignored once it is placed. */
   x: number;
   y: number;
+  /**
+   * Where an event falls on the story's axis, and how far it runs. Plain
+   * numbers: what a number *means* is the world's scale, not the event's.
+   */
+  start?: number;
+  end?: number;
 };
 
 export type Items = Record<string, Item>;

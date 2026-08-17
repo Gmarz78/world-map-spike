@@ -214,6 +214,35 @@ written down, and there is no gesture for changing it.
 **Confidence:** proven for `trailTo` (three assertions, including a card two
 levels down); assumed for everything visual.
 
+## 2026-08-17 — Extent, overlap, and what a number is called
+
+**Tried:** giving every event a start and an end, drawing it as a rectangle
+rather than a circle, stacking overlapping events into lanes, and letting the
+world say whether the axis is pages, chapters or dates.
+**Happened:** three things separated cleanly that could easily have tangled.
+
+- **Shape follows what is being said.** A circle is an identity; a rectangle is
+  an extent. The bar keeps the fill and border of the card of the same kind, so
+  the views stay one language while saying different things about one event.
+- **Lanes are derived, never stored.** Each event takes the first row already
+  clear by the time it begins, and a lane is reused the moment it is free. Move
+  an event and the rows re-form; there is nothing to keep in step.
+- **The axis is plain numbers and the scale is only a reading of them.**
+  Switching between pages, chapters and dates relabels everything and converts
+  nothing. That is the cheap version and it is also the honest one: the story
+  has one axis, and what it is called is a property of the world.
+
+**Means:** the whole of it lives in one module, `axis.ts`, with no React in it —
+so lane packing, the range, the tick positions and the three formatters were all
+checked directly (18 assertions, including touching-counts-as-overlapping and a
+lane being reused rather than abandoned).
+
+**The invented parts, marked:** dates are days counted from an epoch of
+1 January 1200, which is a placeholder rather than a decision; and a newly
+written event is given a span just past everything already written, eight units
+long, because it has to land somewhere and nothing asks.
+**Confidence:** proven for the axis logic; assumed for how any of it looks.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:

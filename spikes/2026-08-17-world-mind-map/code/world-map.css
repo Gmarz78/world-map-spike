@@ -385,68 +385,153 @@
   color: rgba(232, 226, 214, 0.45);
 }
 
-.timeline-scroll {
-  overflow-x: auto;
-  overflow-y: hidden;
-  padding: 0 max(48px, 8vw);
+/* What the numbers are called — a property of the world, changed here. */
+.scale-switch {
+  display: inline-flex;
+  gap: 2px;
+  margin-top: 16px;
+  padding: 3px;
+  border-radius: 999px;
+  background: rgba(16, 19, 26, 0.7);
+  border: 1px solid rgba(232, 226, 214, 0.1);
+}
+.scale-switch button {
+  font-family: inherit;
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  color: rgba(232, 226, 214, 0.45);
+  background: none;
+  border: none;
+  padding: 4px 13px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+.scale-switch button:hover {
+  color: #e8e2d6;
+}
+.scale-switch button.on {
+  color: #f3d492;
+  background: rgba(232, 226, 214, 0.08);
 }
 
-.timeline-track {
+.timeline-body {
+  padding: 0 max(48px, 7vw);
+}
+
+/* --- the axis ----------------------------------------------------------- */
+
+.axis {
   position: relative;
-  display: flex;
-  align-items: flex-start;
-  gap: 74px;
-  width: max-content;
-  min-width: 100%;
-  justify-content: center;
-  padding: 4px 0 8px;
+  height: 30px;
 }
 
-/* One line, running behind the cards at their middle. */
-.timeline-line {
+.axis-tick {
   position: absolute;
-  left: 0;
-  right: 0;
-  top: 84px;
-  height: 1.5px;
-  background: rgba(226, 214, 190, 0.3);
-}
-
-.timeline-stop {
-  position: relative;
+  top: 0;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 9px;
+  gap: 5px;
+}
+.axis-rule {
+  width: 1px;
+  height: 7px;
+  background: rgba(226, 214, 190, 0.28);
+}
+.axis-label {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  color: rgba(232, 226, 214, 0.38);
+}
+
+/* --- lanes and bars ----------------------------------------------------- */
+
+/* An event has an extent here, so it is a rectangle. Two that share any of the
+   axis cannot share a row — that, and only that, is what makes a second lane. */
+.lanes {
+  position: relative;
+  border-top: 1px solid rgba(226, 214, 190, 0.16);
+  padding-top: 14px;
+  margin-top: 2px;
+}
+
+.bar {
+  position: absolute;
+  min-width: 76px;
+  box-sizing: border-box;
+  border-radius: 13px;
+  padding: 0;
   background: none;
   border: none;
-  padding: 0;
   cursor: pointer;
   font: inherit;
   color: inherit;
+  text-align: left;
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease;
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.4);
+}
+.bar:hover {
+  transform: translateY(-2px);
+  z-index: 2;
 }
 
-.timeline-ordinal {
+/* The same fill and border as the card of the same kind, squared off. */
+.bar-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 13px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  padding: 0 16px;
+  overflow: hidden;
+}
+.kind-event > .bar-face {
+  background: linear-gradient(160deg, #22314f 0%, #16203a 78%);
+  border: 2px solid #6f9bf0;
+  color: #dce6fb;
+}
+.kind-object > .bar-face {
+  background: linear-gradient(160deg, #16382f 0%, #0f2a25 78%);
+  border: 2px solid #45c4a5;
+  color: #d5f2e9;
+}
+
+.bar-label {
+  font-family: 'Iowan Old Style', 'Palatino Linotype', Georgia, serif;
+  font-size: 14px;
+  line-height: 1.15;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.bar-when {
   font-size: 10.5px;
-  letter-spacing: 0.16em;
-  color: rgba(232, 226, 214, 0.35);
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0.5;
 }
 
-/* The card is the map's card, unchanged, so the two views share a vocabulary. */
-.timeline-stop .circle-node {
-  width: 116px;
-  height: 116px;
-  cursor: pointer;
+/* Badges ride the far end of the bar rather than its rim. */
+.bar-badges {
+  position: absolute;
+  right: -11px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  gap: 5px;
+  z-index: 3;
 }
-.timeline-stop:hover .circle-node {
-  transform: translateY(-3px);
-}
-
-.timeline-of {
-  font-size: 10.5px;
-  letter-spacing: 0.04em;
-  color: rgba(232, 226, 214, 0.35);
-  min-height: 14px;
+.bar-badges .badge {
+  position: static;
+  transform: none;
 }
 
 /* --- toolbar ------------------------------------------------------------ */

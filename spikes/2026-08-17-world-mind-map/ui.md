@@ -38,27 +38,47 @@ belongs to what by moving it there.
 **Leads to:** itself, one level down.
 
 ### Timeline
-**Purpose:** read the same world as a sequence rather than a hierarchy —
-everything that happens in it, one after another.
+**Purpose:** read the same world along its axis — what happens, where it falls,
+and how long it runs.
 
 **Contains:**
-- The **world's name** and a line beneath it: `Everything that happens, in
-  order — 4 so far`.
-- **One card per event**, in a row, on a single horizontal line that runs behind
-  them at their middle. They are the map's cards, unchanged: same size as a ring
-  card, same blue, same kind tag, same rim badges saying what each event holds.
-- An **ordinal** above each — 1, 2, 3 — and, beneath any event that belongs to
-  another event rather than to the world, `during <that event>`.
-- It scrolls sideways when the story outgrows the screen.
+- The **world's name**, and a line beneath it: `Everything that happens, in
+  order — 4 across 2 lanes, measured in pages`.
+- The **scale switch** — `Pages`, `Chapters`, `Dates`.
+- The **axis**, six labelled marks across the story's extent.
+- **One bar per event**, positioned and sized by where it starts and ends,
+  carrying its name and its span — `p. 34 – p. 68` — and its object badges
+  riding the far end.
+- **Lanes**, as many as the overlaps demand.
 
 **Reached from:** the view switch.
-**Leads to:** the map. Clicking an event opens it there, at exactly the depth it
-lives — `Aetheria › Events › Siege of Ravenhold`, worked out from what it
-belongs to.
+**Leads to:** the map. Clicking a bar opens that event there, at exactly the
+depth it lives — `Aetheria › Events › Siege of Ravenhold`, worked out from what
+it belongs to.
 
-**Deliberately flat.** No dates, no lengths, no gaps, no acts or chapters.
-A card's position means *after the one before it* and nothing else. Order is the
-order things were written down.
+## Rectangles, lanes, and what the numbers are called
+
+**An event is a rectangle here, not a circle**, because on this view it has an
+extent: it starts somewhere and ends somewhere. It keeps the fill and border of
+the card of the same kind, squared off — the map's blue, the map's green — so
+the two views stay one language while saying different things about the same
+event. Circles for identity, rectangles for extent.
+
+**Lanes come from overlap and nothing else.** Two events that share any of the
+axis cannot share a row, so each takes the first row that is already clear by
+the time it begins. A lane is reused the moment it is free rather than
+abandoned, so the picture stays as short as it honestly can be. Touching counts
+as overlapping: an event ending exactly where another begins takes the next
+lane down. Nothing about lanes is stored — move an event and the rows re-form.
+
+**The axis is plain numbers, and the world says what they are called.** An event
+holds a start and an end; whether 34 is a page, a chapter or a day is a property
+of the world, not of the event. Switching scale relabels the axis and every
+bar's caption, and **converts nothing** — the same story read three ways.
+
+Dates are the one place a bare number has to take a shape of its own: they are
+counted as days from an invented epoch of 1 January 1200. That epoch is a
+placeholder, not a decision.
 
 ## Navigation
 
@@ -244,11 +264,22 @@ Consequences, all deliberate:
 - **What is a relationship between two objects?** The map only expresses
   belonging. "The Ember Crown was lost at the Siege" and "the Crown belongs to
   the Siege" are not the same claim, and only the second can be drawn.
-- **The timeline cannot be rearranged.** It draws an order it has no way to
-  change: sequence is insertion order, and there is no gesture for moving an
-  event earlier or later. For a spike about arranging things by hand, that is
-  the obvious next thing to try.
-- **The timeline is flat, the map is not.** An event belonging to another event
-  sits in the row like any other, with a small `during …` beneath it. Whether
-  nesting should show as position, indentation, or not at all is open.
+- **A span cannot be changed.** Bars are drawn from numbers nothing can edit:
+  no dragging a bar along the axis, no pulling its ends. For a spike about
+  arranging things by hand, that is the next thing to try, and the lanes
+  re-forming under a dragged bar is the thing worth seeing.
+- **A new event is guessed onto the end.** Writing one in the map gives it a
+  span just past everything already written, eight units long. It has to land
+  somewhere, but nothing was asked and nothing is shown about it there.
+- **Objects are not on the axis at all.** They reach the story only by belonging
+  to an event, which is why they appear as badges on a bar and never as bars.
+  Whether an object should have a life of its own along the axis is open.
+- **The scales are not really interchangeable.** The same number is a page, a
+  chapter and a day, so a story 96 units long is 96 pages, 96 chapters or three
+  months depending on a switch. Real chapters would want a coarser axis than
+  pages, and that is not modelled.
+- **Nesting shows only in a caption.** An event belonging to another event is a
+  bar like any other, with `· during Siege of Ravenhold` in its span line.
+  Whether nesting should show as containment, indentation, or not at all is
+  open.
 - **Nothing is saved.** Reload and the world resets to Aetheria.
