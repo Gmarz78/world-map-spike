@@ -158,6 +158,14 @@ by hand, that is the finding to sit with.
 **Confidence:** proven that it builds and the rules hold; assumed for how it
 plays.
 
+**Followed by:** a category's ring now ends in an empty slot — a dashed
+`+ New event` in the last place — so once you are inside a category, making a
+card happens where the card will stand rather than from a button in the corner.
+The slot is not a thing in the world: it exists only in the drawing, is never a
+drop target, cannot be dragged, and its line to the middle is dashed. That
+gives the world screen a reason to be only a way in, since everything you make
+is made one level down.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:

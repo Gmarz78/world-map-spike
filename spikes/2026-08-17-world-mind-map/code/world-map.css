@@ -219,6 +219,34 @@
   box-shadow: inset 0 0 0 1px rgba(232, 226, 214, 0.4);
 }
 
+/* --- the empty slot at the end of a ring -------------------------------- */
+
+.is-add {
+  box-shadow: none;
+}
+.is-add .card-face {
+  background: rgba(232, 226, 214, 0.02);
+  border-style: dashed;
+  opacity: 0.55;
+  transition:
+    opacity 140ms ease,
+    background 140ms ease;
+}
+.is-add:hover .card-face {
+  opacity: 1;
+  background: rgba(232, 226, 214, 0.06);
+}
+.is-add .plus {
+  font-size: 27px;
+  line-height: 0.8;
+  opacity: 0.75;
+}
+.is-add .label {
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  font-size: 11.5px;
+  letter-spacing: 0.04em;
+}
+
 /* --- groups: more than one of a kind ------------------------------------ */
 
 /* No stacked shoulders behind these any more — the badge on the rim says how

@@ -28,6 +28,16 @@ export function parseGroup(id: string): { owner: string; kind: Kind } | null {
 
 export const groupLabel = (kind: Kind) => (kind === 'event' ? 'Events' : 'Objects');
 
+/**
+ * The empty place at the end of a category's ring. It is not a thing in the
+ * world, only somewhere to press, so it has no entry anywhere else.
+ */
+export const addSlotId = (categoryId: string) => `add:${categoryId}`;
+
+export function parseAddSlot(id: string): { owner: string; kind: Kind } | null {
+  return id.startsWith('add:') ? parseGroup(id.slice(4)) : null;
+}
+
 export type Badge = { id: string; kind: Kind; label: string; count: number };
 
 /**

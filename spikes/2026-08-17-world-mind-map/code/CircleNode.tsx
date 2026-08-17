@@ -10,6 +10,7 @@ export type MapNodeData = {
   kind: Kind;
   role: Role;
   isGroup: boolean;
+  isAdd: boolean;
   badges: Badge[];
   dropTarget: boolean;
   editing: boolean;
@@ -47,6 +48,7 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
     `kind-${data.kind}`,
     `role-${data.role}`,
     data.isGroup ? 'is-group' : '',
+    data.isAdd ? 'is-add' : '',
     data.dropTarget ? 'drop-target' : '',
     selected && data.role !== 'centre' ? 'is-selected' : '',
   ]
@@ -61,7 +63,11 @@ export function CircleNode({ id, data, selected }: NodeProps<MapNode>) {
       <Handle type="source" position={Position.Bottom} style={hiddenHandle} isConnectable={false} />
 
       <span className="card-face">
-        {data.kind !== 'world' && !data.isGroup && <span className="kind-tag">{data.kind}</span>}
+        {data.isAdd && <span className="plus">+</span>}
+
+        {data.kind !== 'world' && !data.isGroup && !data.isAdd && (
+          <span className="kind-tag">{data.kind}</span>
+        )}
 
         {data.editing ? (
           <input

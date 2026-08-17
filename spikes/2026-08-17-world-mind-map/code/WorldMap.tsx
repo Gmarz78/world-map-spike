@@ -16,11 +16,13 @@ import '@xyflow/react/dist/style.css';
 
 import { CircleNode, type MapNode, type MapNodeData, type Role } from './CircleNode';
 import {
+  addSlotId,
   badgesFor,
   descendantsOf,
   groupId,
   kindOf,
   labelOf,
+  parseAddSlot,
   parseGroup,
   resolveTarget,
   ringEntries,
@@ -63,7 +65,14 @@ const SEED_PARENTS: Parents = {
 };
 
 /** What a card is, before the live bits (highlight, rename) are stitched on. */
-type CardSpec = { label: string; kind: Kind; role: Role; isGroup: boolean; badges: Badge[] };
+type CardSpec = {
+  label: string;
+  kind: Kind;
+  role: Role;
+  isGroup: boolean;
+  isAdd: boolean;
+  badges: Badge[];
+};
 
 export const sizeOf = (data: { role: string }) =>
   data.role === 'centre' ? CENTRE_SIZE : ITEM_SIZE;
@@ -86,13 +95,15 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
       id,
       type: 'circle' as const,
       position: toTopLeft(centre, size),
-      draggable: spec.role !== 'centre' && !spec.isGroup,
+      draggable: spec.role !== 'centre' && !spec.isGroup && !spec.isAdd,
       style: { width: size, height: size },
       data: { ...blankData, ...spec } as MapNodeData,
     };
   };
 
   const badges = (id: string) => badgesFor(id, items, parents);
+
+  const category = parseGroup(focus);
 
   const nodes: MapNode[] = [
     make(
@@ -101,7 +112,8 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
         label: labelOf(focus, items),
         kind: kindOf(focus, items),
         role: 'centre',
-        isGroup: !!parseGroup(focus),
+        isGroup: !!category,
+        isAdd: false,
         badges: badges(focus),
       },
       { x: 0, y: 0 },
@@ -109,7 +121,11 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
   ];
 
   const ring = ringEntries(focus, items, parents);
-  const positions = ringPositions(ring.length);
+  // A category's ring ends in an empty place to press, so a new member is made
+  // where it will stand rather than from a button in the corner.
+  const slots = category ? ring.length + 1 : ring.length;
+  const positions = ringPositions(slots);
+
   ring.forEach((entry, i) => {
     nodes.push(
       make(
@@ -119,12 +135,30 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
           kind: entry.kind,
           role: 'ring',
           isGroup: entry.isGroup,
+          isAdd: false,
           badges: badges(entry.id),
         },
         positions[i],
       ),
     );
   });
+
+  if (category) {
+    nodes.push(
+      make(
+        addSlotId(focus),
+        {
+          label: category.kind === 'event' ? 'New event' : 'New object',
+          kind: category.kind,
+          role: 'ring',
+          isGroup: false,
+          isAdd: true,
+          badges: [],
+        },
+        positions[slots - 1],
+      ),
+    );
+  }
 
   // Cards that belong to nothing are visible at every depth — they have to be,
   // or there would be nowhere to drag them from.
@@ -138,6 +172,7 @@ function buildNodes(items: Items, parents: Parents, focus: string): MapNode[] {
           kind: item.kind,
           role: 'loose',
           isGroup: false,
+          isAdd: false,
           badges: badges(item.id),
         },
         toCentre({ x: item.x, y: item.y }, ITEM_SIZE),
@@ -220,7 +255,8 @@ function WorldMapCanvas() {
       let best: { id: string; d: number } | null = null;
 
       for (const n of all) {
-        if (n.id === dragged.id || banned.has(resolveTarget(n.id))) continue;
+        // The empty slot is somewhere to press, never somewhere to land.
+        if (n.id === dragged.id || n.data.isAdd || banned.has(resolveTarget(n.id))) continue;
         const to = toCentre(n.position, sizeOf(n.data));
         const d = Math.hypot(to.x - from.x, to.y - from.y);
         const reach = (sizeOf(n.data) / 2 + sizeOf(dragged.data) / 2) * 0.85;
@@ -257,20 +293,6 @@ function WorldMapCanvas() {
     [hitTest, nodes],
   );
 
-  // Click the middle to rename it. Click anything else to go into it.
-  const onNodeClick: NodeMouseHandler = useCallback(
-    (_, node) => {
-      if (didDrag.current) return;
-      if (node.id === focus) {
-        if (!parseGroup(node.id)) setEditingId(node.id);
-        return;
-      }
-      setEditingId(null);
-      setTrail((t) => [...t, node.id]);
-    },
-    [focus],
-  );
-
   /**
    * A new card belongs to whatever is in the middle — through a category to the
    * card it hangs off — and the map goes to the category that now holds it, so
@@ -300,6 +322,28 @@ function WorldMapCanvas() {
     [focus],
   );
 
+  // Press the empty slot to make one. Click the middle to rename it. Click
+  // anything else to go into it.
+  const onNodeClick: NodeMouseHandler = useCallback(
+    (_, node) => {
+      if (didDrag.current) return;
+
+      const slot = parseAddSlot(node.id);
+      if (slot) {
+        addCard(slot.kind);
+        return;
+      }
+
+      if (node.id === focus) {
+        if (!parseGroup(node.id)) setEditingId(node.id);
+        return;
+      }
+      setEditingId(null);
+      setTrail((t) => [...t, node.id]);
+    },
+    [focus, addCard],
+  );
+
   const edges: Edge[] = useMemo(
     () =>
       nodes
@@ -309,7 +353,9 @@ function WorldMapCanvas() {
           source: focus,
           target: n.id,
           type: 'straight',
-          style: { stroke: 'rgba(226, 214, 190, 0.3)', strokeWidth: 1.5 },
+          style: n.data.isAdd
+            ? { stroke: 'rgba(226, 214, 190, 0.16)', strokeWidth: 1.5, strokeDasharray: '4 5' }
+            : { stroke: 'rgba(226, 214, 190, 0.3)', strokeWidth: 1.5 },
         })),
     [nodes, focus],
   );
