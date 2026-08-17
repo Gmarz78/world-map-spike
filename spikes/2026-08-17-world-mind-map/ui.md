@@ -75,6 +75,10 @@ opened out again, but not turned inside out. Positions are whole units — the
 axis is places, not fractions of one — so a nudge under half a unit does nothing
 at all.
 
+A drag that ends on the bar it moved does **not** count as a click on it — the
+same rule the map keeps for its cards. Only a press that never travelled opens
+the event.
+
 **The ruler is held still while you drag.** The axis is derived from what is on
 it, so without this you would be moving the very thing you are measuring
 against, and a bar would drift away from the pointer as its own movement

@@ -25,8 +25,10 @@ type Drag = {
   originX: number;
   pxPerUnit: number;
   span: { start: number; end: number };
-  moved: boolean;
 };
+
+/** Far enough to have meant it, rather than a shaky press. */
+const MEANT_IT = 3;
 
 /**
  * The same world, read along its axis.
@@ -56,6 +58,11 @@ export function Timeline({
   const drag = useRef<Drag | null>(null);
   const [dragging, setDragging] = useState<Drag | null>(null);
 
+  // A drag ends with a DOM click on the bar it ended over, and that click
+  // arrives after the pointer has been released — so the drag has already been
+  // cleared by the time it is asked about. The answer has to outlive it.
+  const didDrag = useRef(false);
+
   const world = items[worldId];
   const events = Object.values(items).filter((item) => item.kind === 'event');
   const spans: Span[] = events.map((event) => ({ id: event.id, ...spanOf(event) }));
@@ -82,13 +89,13 @@ export function Timeline({
     const mode: DragMode = atLeftEdge ? 'start' : atRightEdge ? 'end' : 'move';
 
     frozen.current = { from: live.from, to: live.to };
+    didDrag.current = false;
     const next: Drag = {
       id,
       mode,
       originX: event.clientX,
       pxPerUnit: track.width / (live.to - live.from),
       span: spanOf(items[id]),
-      moved: false,
     };
     drag.current = next;
     setDragging(next);
@@ -99,10 +106,10 @@ export function Timeline({
     const current = drag.current;
     if (!current) return;
 
-    const deltaUnits = (event.clientX - current.originX) / current.pxPerUnit;
-    if (Math.abs(event.clientX - current.originX) > 3) current.moved = true;
+    const travelled = event.clientX - current.originX;
+    if (Math.abs(travelled) > MEANT_IT) didDrag.current = true;
 
-    const span = applyDrag(current.span, deltaUnits, current.mode);
+    const span = applyDrag(current.span, travelled / current.pxPerUnit, current.mode);
     setItems((prev) => ({ ...prev, [current.id]: { ...prev[current.id], ...span } }));
   };
 
@@ -110,6 +117,9 @@ export function Timeline({
     drag.current = null;
     frozen.current = null;
     setDragging(null);
+    // The click lands in the same task as the release, so this outlives it by
+    // exactly long enough to be asked.
+    setTimeout(() => (didDrag.current = false), 0);
   };
 
   return (
@@ -173,10 +183,9 @@ export function Timeline({
                 onPointerMove={moveDrag}
                 onPointerUp={endDrag}
                 onPointerCancel={endDrag}
+                // Only a press that never travelled means "open this".
                 onClick={() => {
-                  // A drag that ends on the bar also fires a click; only a
-                  // press that never moved means "open this".
-                  if (!dragging && !drag.current) onOpen(event.id);
+                  if (!didDrag.current) onOpen(event.id);
                 }}
                 style={{
                   left: `${atPercent(span.start, from, to)}%`,

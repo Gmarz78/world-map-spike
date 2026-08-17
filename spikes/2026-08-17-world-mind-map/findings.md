@@ -269,6 +269,15 @@ the timeline is a tool rather than a picture.
 whether a bar changing lane mid-drag reads as honest or as the bar jumping out
 from under you.
 
+**Got it wrong once, the same way twice.** The first version asked "am I
+dragging?" inside the click handler, and the answer was always no: the click
+lands *after* the pointer is released, so the drag it was asking about had
+already been cleared, and every drag opened the event it had just moved. The map
+had solved this weeks-of-code earlier — a flag that outlives the release by one
+timeout — and the timeline was written without reaching for it. **Any pointer
+drag that ends over its own element needs an answer that outlives the release,**
+not a question about the present.
+
 ## 2026-08-17 — Choices made without being asked
 
 Details that came up and were decided in passing, all cheap to change:
