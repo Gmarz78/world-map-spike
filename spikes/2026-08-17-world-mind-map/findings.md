@@ -13,6 +13,11 @@ touches `spikes/`.
 **Run it:** `npm run dev` in `C:\Dev\world-map-spike`, then
 <http://localhost:5173>.
 
+**Check it:** `node check-grouping.ts` and `node check-axis.ts` in `checks/`.
+Deliberately **not** in `code/` — they are not a test suite but the harness that
+made the rules verifiable when the browser could not be driven, and the reason
+`grouping.ts` and `axis.ts` have no React in them. See `checks/README.md`.
+
 ---
 
 ## 2026-08-17 — Stack: React Flow, unchallenged
@@ -422,3 +427,77 @@ Details that came up and were decided in passing, all cheap to change:
 - **Seed world:** Aetheria, holding four events and two objects, with the Salt
   Ledger one level down under the Siege of Ravenhold so that drilling has
   somewhere to go. Nothing is adrift.
+
+---
+
+## Handoff — 2026-08-17
+
+Everything below runs. `npm run dev` in `C:\Dev\world-map-spike`, then
+<http://localhost:5173>. Nothing is saved: reload and the world resets to
+Aetheria.
+
+### Promoted
+- Nothing. No slice has been promoted, and there is no host application to
+  promote into — this repo exists for the spike, so its first promotion will
+  be into a real `src/` alongside it.
+
+### Spec-ready
+- **The map's gesture**, in `ui.md` — drop a card on another to make it belong
+  there, drop on empty canvas to send it back to the world. One gesture, two
+  readings, no menus.
+- **Unfolding rather than navigating**, in `ui.md` — the world never moves, a
+  category grows out of the badge that names it, pressing a card folds what it
+  has open, and pressing a card with nothing open renames it. Folding takes
+  everything only reachable through what was folded (`foldAway`).
+- **Categories as a way of drawing** — a category has no identity beyond the
+  card it hangs off and the kind it gathers, so nothing about grouping is
+  stored and every count and stack re-forms from the relationships.
+- **Making a card by naming it** — nothing exists until it has a name, and it
+  travels from the slot into its place on the branch.
+- **The timeline's model** — an event holds a start and an end as plain
+  numbers; lanes come from overlap alone; the scale (pages, chapters, dates) is
+  a property of the world that relabels and converts nothing.
+- **Following one thing** — never every object at once; pick one and see only
+  where it touches the story, drawn as pins in that object's own colour.
+- **The visual rules** — circles for identity, rectangles for extent, colour
+  only where colour means something, and movement only for what happened
+  without your hand.
+
+All of this is `proven` as behaviour and `assumed` as design: it has been
+checked, and used, but never used by anyone but the person who asked for it.
+
+### Still open
+- **Derive has never run.** There is no `data-model.md` and no `interfaces.md`.
+  The shape is legible in `grouping.ts` and `axis.ts`, but it has not been
+  written down as entities and fields, and nothing has been marked `observed`
+  against real data. This is the obvious next phase.
+- **Kind is the only thing categories are made of.** Characters, locations,
+  factions, regions, arcs — none of them can gather anything, because the split
+  is hardcoded to event-versus-object in `grouping.ts`.
+- **A branch reaches rather than crowds**, so a category with thirty members
+  ends a long way from the middle, and two deep limbs can grow into each other.
+  Nothing checks for that.
+- **The two views never show both things at once.** The map is belonging, the
+  timeline is position. "What was the Crown present at, and when?" needs both.
+- **A category of one still costs a press.**
+- **No characters, no locations, no profiles, no prose, no persistence, no
+  accounts.** None of it has been touched.
+
+### Must be re-specified
+- **Everything is `invented`.** No real data has been near this. Every field in
+  every fixture was made up.
+- **Dates are days from an epoch of 1 January 1200.** A placeholder chosen to
+  make the scale switch demonstrable, not a decision about how time works.
+- **The scales are not really interchangeable.** The same number is a page, a
+  chapter and a day, so a story 96 units long is 96 pages, 96 chapters or three
+  months depending on a switch. Real chapters want a coarser axis than pages,
+  and that is not modelled.
+- **A new event's span is guessed** — just past everything already written,
+  eight units long. Nothing asks, and nothing shows it happened.
+- **Order is insertion order.** The timeline's sequence and every branch's order
+  come from the order things were written down. There is no stored ordering and
+  no way to reorder anything except by moving it on the axis.
+- **Ids are `n-1`, `n-2`.** A module-level counter, reset on reload.
+- **The `loose` card state is dead code.** Nothing can be parentless any more,
+  but the role and its dashed styling are still in the tree, kept in case
+  floating cards come back.
